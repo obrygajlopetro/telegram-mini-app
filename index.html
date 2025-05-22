@@ -126,4 +126,120 @@
     .error {
       margin-top: 10px;
       color: red;
-      font
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="content">
+    <h1>🛍 Интернет-магазин</h1>
+    <div id="store" class="grid"></div>
+  </div>
+
+  <div id="modalOverlay" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <h2>Оплата заказа</h2>
+      <p id="orderInfo"></p>
+      <p class="timer">Осталось времени: <span id="timer">30:00</span></p>
+      <p><b>Сумма к оплате:</b> <span id="amount"></span> ₽</p>
+      <p><b>Реквизиты:</b> 1234 5678 9012 3456</p>
+      <button class="check" onclick="checkPayment()">Проверить оплату</button>
+      <div id="errorMsg" class="error" style="display: none;">❌ Оплата не найдена</div>
+      <button onclick="closeModal()">Отмена</button>
+    </div>
+  </div>
+
+  <script>
+    const storeDiv = document.getElementById("store");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const orderInfoEl = document.getElementById("orderInfo");
+    const amountEl = document.getElementById("amount");
+    const timerEl = document.getElementById("timer");
+    const errorMsg = document.getElementById("errorMsg");
+
+    const products = Array.from({ length: 10 }, (_, i) => ({
+      id: i + 1,
+      name: `Товар №${i + 1}`,
+      price: 1000 + i * 150,
+      image: `https://placehold.co/300x200?text=Товар+${i + 1}`
+    }));
+
+    const metros = ["Пушкинская", "Маяковская", "Петроградская", "Горьковская"];
+
+    products.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${p.image}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <p>Цена: ${p.price} ₽</p>
+        <label>Метро:</label>
+        <select id="metro-${p.id}">
+          ${metros.map(m => `<option value="${m}">${m}</option>`).join("")}
+        </select>
+        <button onclick="buy(${p.id})">Купить</button>
+      `;
+      storeDiv.appendChild(card);
+    });
+
+    let timerInterval;
+
+    function buy(id) {
+      const product = products.find(p => p.id === id);
+      const metro = document.getElementById(`metro-${id}`).value;
+      const quantity = 1;
+      const total = product.price * quantity;
+      const now = new Date();
+      const date = now.toLocaleDateString();
+      const time = now.toLocaleTimeString();
+
+      document.getElementById("content").classList.add("blurred");
+      modalOverlay.style.display = "flex";
+      errorMsg.style.display = "none";
+
+      orderInfoEl.innerHTML = `
+        <b>${product.name}</b><br>
+        Дата: ${date} <br>
+        Время: ${time} <br>
+        Метро: ${metro} <br>
+        Кол-во: ${quantity}
+      `;
+      amountEl.textContent = total;
+
+      startTimer(30 * 60);
+    }
+
+    function closeModal() {
+      modalOverlay.style.display = "none";
+      document.getElementById("content").classList.remove("blurred");
+      clearInterval(timerInterval);
+    }
+
+    function checkPayment() {
+      errorMsg.style.display = "block"; // всегда ошибка
+    }
+
+    function startTimer(seconds) {
+      let remaining = seconds;
+      timerEl.textContent = formatTime(remaining);
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        remaining--;
+        timerEl.textContent = formatTime(remaining);
+        if (remaining <= 0) {
+          clearInterval(timerInterval);
+          timerEl.textContent = "⛔ Время вышло";
+        }
+      }, 1000);
+    }
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+  </script>
+
+</body>
+</html>
