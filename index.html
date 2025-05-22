@@ -2,134 +2,229 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Мини-магазин</title>
+  <title>Telegram Mini Shop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: sans-serif;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f6f8fa;
       padding: 20px;
+      color: #222;
     }
-    .product {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 20px;
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
     }
-    .hidden {
-      display: none;
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
     }
-    #checkout {
-      position: fixed;
-      top: 10%;
-      left: 50%;
-      transform: translateX(-50%);
+
+    .card {
       background: #fff;
-      border: 2px solid #333;
       padding: 20px;
-      border-radius: 10px;
-      z-index: 1000;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
     }
-    #overlay {
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    .card label {
+      display: block;
+      margin: 10px 0 5px;
+      font-size: 0.9rem;
+    }
+
+    .card select,
+    .card input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .card button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      background: #2a9d8f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .card button:hover {
+      background: #21867a;
+    }
+
+    #checkout, #overlay {
       position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      width: 100%;
+      height: 100%;
       z-index: 999;
+    }
+
+    #overlay {
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    #checkout {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .checkout-box {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      text-align: center;
+      position: relative;
+    }
+
+    .checkout-box h2 {
+      margin-top: 0;
+    }
+
+    .checkout-box p {
+      margin: 10px 0;
+    }
+
+    .checkout-box .timer {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .checkout-box button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
 
-  <h1>🛒 Магазин товаров</h1>
+  <h1>🛍 Telegram Mini Shop</h1>
 
-  <div id="products"></div>
+  <div class="products" id="products"></div>
 
-  <!-- Окно оплаты -->
   <div id="overlay" class="hidden"></div>
   <div id="checkout" class="hidden">
-    <h2>💳 Оплата</h2>
-    <p id="checkout-info"></p>
-    <p>⏳ Таймер: <span id="timer">15:00</span></p>
-    <p>Переведите сумму на карту: <b>1234 5678 9012 3456</b></p>
-    <button onclick="closeCheckout()">Отмена</button>
+    <div class="checkout-box">
+      <h2>💳 Оплата</h2>
+      <p id="checkout-info"></p>
+      <p class="timer">⏳ <span id="timer">15:00</span></p>
+      <p>Переведите сумму на карту: <br><strong>1234 5678 9012 3456</strong></p>
+      <button onclick="closeCheckout()">Отмена</button>
+    </div>
   </div>
 
   <script>
     const products = [
-      { id: 1, name: "Товар 1", price: 1000 },
-      { id: 2, name: "Товар 2", price: 1500 },
-      { id: 3, name: "Товар 3", price: 2000 },
+      { id: 1, name: "Смарт-чашка", price: 1200 },
+      { id: 2, name: "Мини-лампа", price: 950 },
+      { id: 3, name: "Эко-бутылка", price: 700 },
     ];
 
-    const metros = ["Пушкинская", "Чкаловская", "Технологический институт"];
+    const metros = ["Пушкинская", "Звенигородская", "Технологический институт", "Горьковская"];
 
     const productsDiv = document.getElementById("products");
 
-    products.forEach(product => {
-      const div = document.createElement("div");
-      div.className = "product";
-      div.innerHTML = `
-        <h3>${product.name}</h3>
-        <p>Цена: ${product.price} ₽</p>
-        <label>Метро:
-          <select id="metro-${product.id}">
-            ${metros.map(m => `<option value="${m}">${m}</option>`).join("")}
-          </select>
-        </label><br><br>
-        <label>Количество:
-          <input type="number" id="qty-${product.id}" min="1" value="1" />
-        </label><br><br>
-        <label>Тип доставки:
-          <select id="delivery-${product.id}">
-            <option value="pickup">Самовывоз</option>
-            <option value="delivery">Доставка</option>
-          </select>
-        </label><br><br>
-        <button onclick="buy(${product.id})">Купить</button>
+    products.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h3>${p.name}</h3>
+        <p>💰 ${p.price} ₽</p>
+        <label>Метро:</label>
+        <select id="metro-${p.id}">
+          ${metros.map(m => `<option value="${m}">${m}</option>`).join("")}
+        </select>
+        <label>Количество:</label>
+        <input type="number" id="qty-${p.id}" min="1" value="1">
+        <label>Доставка:</label>
+        <select id="delivery-${p.id}">
+          <option value="pickup">Самовывоз</option>
+          <option value="delivery">Доставка</option>
+        </select>
+        <button onclick="buy(${p.id})">Купить</button>
       `;
-      productsDiv.appendChild(div);
+      productsDiv.appendChild(card);
     });
 
-    function buy(productId) {
-      const product = products.find(p => p.id === productId);
-      const metro = document.getElementById(`metro-${productId}`).value;
-      const qty = parseInt(document.getElementById(`qty-${productId}`).value);
-      const delivery = document.getElementById(`delivery-${productId}`).value;
-      const total = product.price * qty;
+    function buy(id) {
+      const product = products.find(p => p.id === id);
+      const qty = +document.getElementById(`qty-${id}`).value;
+      const metro = document.getElementById(`metro-${id}`).value;
+      const delivery = document.getElementById(`delivery-${id}`).value;
+      const total = qty * product.price;
 
-      // Показать окно оплаты
+      document.getElementById("checkout-info").innerHTML = `
+        Товар: <b>${product.name}</b><br>
+        Кол-во: <b>${qty}</b><br>
+        Станция: <b>${metro}</b><br>
+        Доставка: <b>${delivery === 'pickup' ? 'Самовывоз' : 'Курьер'}</b><br>
+        Сумма: <b>${total} ₽</b>
+      `;
       document.getElementById("overlay").classList.remove("hidden");
       document.getElementById("checkout").classList.remove("hidden");
-      document.getElementById("checkout-info").innerText = `
-        Товар: ${product.name}
-        \nКоличество: ${qty}
-        \nМетро: ${metro}
-        \nТип доставки: ${delivery === "pickup" ? "Самовывоз" : "Доставка"}
-        \nСумма к оплате: ${total} ₽
-      `.replace(/\n/g, "<br>");
 
-      startTimer(15 * 60); // 15 минут
+      startTimer(15 * 60);
     }
 
     function closeCheckout() {
       document.getElementById("overlay").classList.add("hidden");
       document.getElementById("checkout").classList.add("hidden");
+      clearInterval(timerInterval);
     }
 
     let timerInterval;
     function startTimer(seconds) {
       clearInterval(timerInterval);
-      let timeLeft = seconds;
-      const timerSpan = document.getElementById("timer");
+      let time = seconds;
+      const timerEl = document.getElementById("timer");
 
       timerInterval = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        timerSpan.textContent = `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
-        timeLeft--;
+        const mins = Math.floor(time / 60);
+        const secs = time % 60;
+        timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        time--;
 
-        if (timeLeft < 0) {
+        if (time < 0) {
           clearInterval(timerInterval);
-          timerSpan.textContent = "Время вышло!";
+          timerEl.textContent = "⛔ Время вышло";
         }
       }, 1000);
     }
