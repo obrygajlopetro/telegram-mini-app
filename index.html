@@ -1,36 +1,139 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>My Telegram Mini App</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>Мини-магазин</title>
   <style>
     body {
       font-family: sans-serif;
-      text-align: center;
-      padding: 2em;
+      padding: 20px;
     }
-    button {
-      padding: 1em 2em;
-      font-size: 1em;
-      background: #0088cc;
-      color: white;
-      border: none;
-      border-radius: 0.5em;
+    .product {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    #checkout {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 2px solid #333;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1000;
+    }
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
     }
   </style>
 </head>
 <body>
-  <h1>Привет из Mini App!</h1>
-  <button onclick="sendData()">Отправить данные боту</button>
+
+  <h1>🛒 Магазин товаров</h1>
+
+  <div id="products"></div>
+
+  <!-- Окно оплаты -->
+  <div id="overlay" class="hidden"></div>
+  <div id="checkout" class="hidden">
+    <h2>💳 Оплата</h2>
+    <p id="checkout-info"></p>
+    <p>⏳ Таймер: <span id="timer">15:00</span></p>
+    <p>Переведите сумму на карту: <b>1234 5678 9012 3456</b></p>
+    <button onclick="closeCheckout()">Отмена</button>
+  </div>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    const products = [
+      { id: 1, name: "Товар 1", price: 1000 },
+      { id: 2, name: "Товар 2", price: 1500 },
+      { id: 3, name: "Товар 3", price: 2000 },
+    ];
 
-    function sendData() {
-      tg.sendData("Привет от мини-приложения!");
+    const metros = ["Пушкинская", "Чкаловская", "Технологический институт"];
+
+    const productsDiv = document.getElementById("products");
+
+    products.forEach(product => {
+      const div = document.createElement("div");
+      div.className = "product";
+      div.innerHTML = `
+        <h3>${product.name}</h3>
+        <p>Цена: ${product.price} ₽</p>
+        <label>Метро:
+          <select id="metro-${product.id}">
+            ${metros.map(m => `<option value="${m}">${m}</option>`).join("")}
+          </select>
+        </label><br><br>
+        <label>Количество:
+          <input type="number" id="qty-${product.id}" min="1" value="1" />
+        </label><br><br>
+        <label>Тип доставки:
+          <select id="delivery-${product.id}">
+            <option value="pickup">Самовывоз</option>
+            <option value="delivery">Доставка</option>
+          </select>
+        </label><br><br>
+        <button onclick="buy(${product.id})">Купить</button>
+      `;
+      productsDiv.appendChild(div);
+    });
+
+    function buy(productId) {
+      const product = products.find(p => p.id === productId);
+      const metro = document.getElementById(`metro-${productId}`).value;
+      const qty = parseInt(document.getElementById(`qty-${productId}`).value);
+      const delivery = document.getElementById(`delivery-${productId}`).value;
+      const total = product.price * qty;
+
+      // Показать окно оплаты
+      document.getElementById("overlay").classList.remove("hidden");
+      document.getElementById("checkout").classList.remove("hidden");
+      document.getElementById("checkout-info").innerText = `
+        Товар: ${product.name}
+        \nКоличество: ${qty}
+        \nМетро: ${metro}
+        \nТип доставки: ${delivery === "pickup" ? "Самовывоз" : "Доставка"}
+        \nСумма к оплате: ${total} ₽
+      `.replace(/\n/g, "<br>");
+
+      startTimer(15 * 60); // 15 минут
+    }
+
+    function closeCheckout() {
+      document.getElementById("overlay").classList.add("hidden");
+      document.getElementById("checkout").classList.add("hidden");
+    }
+
+    let timerInterval;
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      let timeLeft = seconds;
+      const timerSpan = document.getElementById("timer");
+
+      timerInterval = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerSpan.textContent = `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+        timeLeft--;
+
+        if (timeLeft < 0) {
+          clearInterval(timerInterval);
+          timerSpan.textContent = "Время вышло!";
+        }
+      }, 1000);
     }
   </script>
+
 </body>
 </html>
