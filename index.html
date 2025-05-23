@@ -35,8 +35,21 @@
       color: white;
       cursor: pointer;
     }
-    .loader, .order-loader, .payment-screen {
+    .loader, .order-loader, {
       position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }  
+    .payment-screen
+    position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
