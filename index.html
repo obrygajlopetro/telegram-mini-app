@@ -1,92 +1,177 @@
-<body style="margin:0; background:#000; color:white; font-family:sans-serif;">
-  <div id="city-metro-modal" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;
-      background:#1e1e1e;border-radius:10px;padding:20px;width:90%;max-width:400px;text-align:center;">
-    <img src="https://via.placeholder.com/128x64" alt="Баннер" style="width:128px;height:64px;object-fit:contain;margin-bottom:10px;">
-    <h2 style="font-size:16px;margin:10px 0;">Выбери город и станцию метро</h2>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Выбор города и метро</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: black;
+      color: white;
+    }
+    .centered-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      background-color: black;
+    }
+    .selector-box {
+      background-color: #2a2a2a;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    .selector-box img {
+      width: 128px;
+      height: 64px;
+      object-fit: cover;
+      margin-bottom: 15px;
+    }
+    .selector-box h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .selector-box select, .selector-box button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    .selector-box select {
+      background-color: #444;
+      color: white;
+    }
+    .selector-box button {
+      background-color: white;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    /* Loader styles */
+    #loader-screen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #loader-bar-container {
+      width: 80%;
+      max-width: 400px;
+      height: 8px;
+      background: #333;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    #loader-bar {
+      height: 100%;
+      width: 0%;
+      background: white;
+      transition: width 0.1s;
+    }
+  </style>
+</head>
+<body>
 
-    <select id="city-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;">
+<div class="centered-box" id="select-screen">
+  <div class="selector-box">
+    <img src="https://via.placeholder.com/128x64" alt="Баннер">
+    <h2>Выбери город и станцию метро</h2>
+    <select id="city-select">
       <option value="moscow">Москва</option>
       <option value="spb">Санкт-Петербург</option>
     </select>
-
-    <select id="metro-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;">
-      <!-- Станции загружаются скриптом -->
-    </select>
-
-    <button id="confirm-btn" style="width:100%;padding:10px;margin-top:10px;border-radius:5px;border:none;background:#444;color:white;">
-      Подтвердить
-    </button>
+    <select id="metro-select"></select>
+    <button onclick="submitSelection()">Подтвердить</button>
   </div>
+</div>
 
-  <script>
-    const citySelect = document.getElementById("city-select");
-    const metroSelect = document.getElementById("metro-select");
+<!-- Лоадбар -->
+<div id="loader-screen">
+  <div id="loader-text" style="margin-bottom: 20px; font-size: 18px;">Загрузка витрины...</div>
+  <div id="loader-bar-container">
+    <div id="loader-bar"></div>
+  </div>
+</div>
 
-    const metroStations = {
-      moscow: [
-        "Авиамоторная","Автозаводская","Академическая","Александровский сад","Алексеевская",
-        "Алма-Атинская","Алтуфьево","Аннино","Арбатская","Аэропорт","Бабушкинская","Баррикадная",
-        "Бауманская","Беговая","Белорусская","Беломорская","Беляево","Бибирево","Библиотека им. Ленина",
-        "Боровицкая","Ботанический сад","Братиславская","Бульвар Дмитрия Донского","Бульвар Рокоссовского",
-        "Бунинская аллея","Варшавская","ВДНХ","Верхние Котлы","Владыкино","Водный стадион","Войковская",
-        "Волгоградский проспект","Волжская","Волоколамская","Воробьёвы горы","Выставочная","Выхино",
-        "Динамо","Дмитровская","Добрынинская","Домодедовская","Достоевская","Дубровка","Жулебино",
-        "Зябликово","Измайловская","Калужская","Кантемировская","Каховская","Каширская","Киевская",
-        "Китай-город","Кожуховская","Коломенская","Комсомольская","Коньково","Красногвардейская",
-        "Краснопресненская","Красносельская","Красные ворота","Крестьянская застава","Кропоткинская",
-        "Крылатское","Кузнецкий мост","Кузьминки","Кунцевская","Курская","Кутузовская","Ленинский проспект",
-        "Лубянка","Лужники","Лухмановская","Люблино","Марксистская","Марьина роща","Марьино","Маяковская",
-        "Медведково","Менделеевская","Митино","Молодёжная","Нагатинская","Нагорная","Нахимовский проспект",
-        "Новогиреево","Новокосино","Новокузнецкая","Новослободская","Новоясеневская","Октябрьская",
-        "Октябрьское поле","Орехово","Отрадное","Охотный ряд","Павелецкая","Парк культуры","Парк Победы",
-        "Партизанская","Первомайская","Перово","Петровско-Разумовская","Печатники","Пионерская","Планерная",
-        "Площадь Ильича","Площадь Революции","Полежаевская","Полянка","Пражская","Преображенская площадь",
-        "Пролетарская","Проспект Вернадского","Проспект Мира","Профсоюзная","Пушкинская","Речной вокзал",
-        "Рижская","Римская","Рязанский проспект","Савёловская","Свиблово","Севастопольская","Семёновская",
-        "Серпуховская","Славянский бульвар","Смоленская","Сокол","Сокольники","Спартак","Спортивная",
-        "Сретенский бульвар","Строгино","Студенческая","Сухаревская","Сходненская","Таганская","Тверская",
-        "Театральная","Текстильщики","Тимирязевская","Третьяковская","Тропарёво","Тульская","Тургеневская",
-        "Тушинская","Улица 1905 года","Улица Академика Янгеля","Улица Горчакова","Улица Скобелевская",
-        "Университет","Филёвский парк","Фили","Фонвизинская","Фрунзенская","Царицыно","Цветной бульвар",
-        "Черкизовская","Чертановская","Чеховская","Чистые пруды","Чкаловская","Шаболовская","Шелепиха",
-        "Щёлковская","Щукинская","Электрозаводская","Юго-Западная","Южная","Ясенево"
-      ],
-      spb: [
-        "Адмиралтейская","Автово","Балтийская","Бухарестская","Василеостровская","Владимирская","Волковская",
-        "Выборгская","Горьковская","Гражданский проспект","Девяткино","Достоевская","Дунайская","Елизаровская",
-        "Звёздная","Зенит","Комендантский проспект","Крестовский остров","Купчино","Ладожская","Ленинский проспект",
-        "Лесная","Лиговский проспект","Маяковская","Международная","Московская","Московские ворота",
-        "Нарвская","Невский проспект","Новочеркасская","Обводный канал","Озерки","Парк Победы","Парнас",
-        "Петроградская","Пионерская","Площадь Александра Невского","Площадь Восстания","Площадь Ленина",
-        "Политехническая","Приморская","Проспект Большевиков","Проспект Ветеранов","Проспект Просвещения",
-        "Пушкинская","Рыбацкое","Садовая","Сенная площадь","Спасская","Спортивная","Технологический институт",
-        "Удельная","Фрунзенская","Чёрная речка","Чкаловская","Электросила"
-      ]
-    };
+<script>
+  const moscowStations = [
+    "Арбатская", "Библиотека имени Ленина", "Киевская", "Краснопресненская",
+    "Кропоткинская", "Октябрьская", "Парк Культуры", "Смоленская", "Университет"
+  ];
+  const spbStations = [
+    "Адмиралтейская", "Балтийская", "Василеостровская", "Гостиный двор",
+    "Звенигородская", "Комендантский проспект", "Невский проспект", "Площадь Ленина", "Технологический институт"
+  ];
 
-    function updateMetroOptions(city) {
-      metroSelect.innerHTML = "";
-      metroStations[city].forEach(station => {
-        const option = document.createElement("option");
-        option.value = station;
-        option.textContent = station;
-        metroSelect.appendChild(option);
-      });
-    }
+  const citySelect = document.getElementById("city-select");
+  const metroSelect = document.getElementById("metro-select");
 
-    citySelect.addEventListener("change", () => {
-      updateMetroOptions(citySelect.value);
+  function updateMetroOptions() {
+    metroSelect.innerHTML = "";
+    const stations = citySelect.value === "moscow" ? moscowStations : spbStations;
+    stations.forEach(station => {
+      const option = document.createElement("option");
+      option.value = station;
+      option.textContent = station;
+      metroSelect.appendChild(option);
     });
+  }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      updateMetroOptions(citySelect.value);
-    });
+  citySelect.addEventListener("change", updateMetroOptions);
+  updateMetroOptions(); // Initial call
 
-    document.getElementById("confirm-btn").addEventListener("click", () => {
-      const selectedCity = citySelect.value;
-      const selectedMetro = metroSelect.value;
-      alert(`Вы выбрали: ${selectedCity}, станция ${selectedMetro}`);
-      // Здесь будет вызов следующего шага
+  function submitSelection() {
+    const selectedMetro = metroSelect.value;
+    document.getElementById("select-screen").style.display = "none";
+    startLoader(selectedMetro, () => {
+      alert("Витрина загружена! (Здесь появится следующий блок)");
+      // Здесь вызовите следующий шаг — например, показать витрину
     });
-  </script>
+  }
+
+  function startLoader(stationName, onComplete) {
+    const loaderScreen = document.getElementById('loader-screen');
+    const loaderText = document.getElementById('loader-text');
+    const loaderBar = document.getElementById('loader-bar');
+
+    loaderText.textContent = `Загрузка витрины для станции метро ${stationName}...`;
+    loaderScreen.style.display = 'flex';
+
+    let progress = 0;
+    const duration = Math.random() * (10000 - 3000) + 3000; // 3–10 сек
+    const interval = 30;
+    const increment = 100 / (duration / interval);
+
+    const intervalId = setInterval(() => {
+      progress += increment;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(intervalId);
+        setTimeout(() => {
+          loaderScreen.style.display = 'none';
+          loaderBar.style.width = '0%';
+          if (typeof onComplete === 'function') onComplete();
+        }, 300);
+      }
+      loaderBar.style.width = `${progress}%`;
+    }, interval);
+  }
+</script>
+
 </body>
+</html>
