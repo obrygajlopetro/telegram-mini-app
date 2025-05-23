@@ -73,10 +73,11 @@
       height: 100%;
       background: white;
     }
-    .blurred {
-      filter: blur(6px);
-      pointer-events: none;
-      user-select: none;
+   .blurred > *:not(#order-loader) {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
     }
     .yellow-box {
       background: #26201f;
@@ -251,10 +252,10 @@
     const dateNow = new Date().toLocaleDateString();
     paymentScreen.innerHTML = `
       <h3>Оплата заказа #${savedOrderId}</h3>
-      <p><strong>Время и дата:</strong> ${timeNow}, ${dateNow}</p>
-      <p><strong>Позиция:</strong> ${name}</p>
-      <p><strong>Метро:</strong> ${selectedMetro}</p>
-      <p><strong>Метод доставки:</strong> ${deliveryMethod}</p>
+      <p>⌞Время и дата: ${timeNow}, ${dateNow}</p>
+      <p>⌞Позиция: ${name}</p>
+      <p>⌞Метро: ${selectedMetro}</p>
+      <p>⌞Метод доставки: ${deliveryMethod}</p>
       <br>
       <p><strong>Реквизиты для оплаты:</strong> ${card}</p>
       <p><strong>Сумма:</strong> ${sum}₽</p>
