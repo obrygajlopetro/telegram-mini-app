@@ -6,7 +6,7 @@
   <title>Витрина</title>
   <style>
     body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f1f3f6; }
-    h1 { font-size: 28px; margin: 20px; text-align: center; }
+    h1 { font-size: 28px; margin: 20px; text-align: center; filter: none; transition: filter 0.3s ease; }
     .container { padding: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; filter: none; transition: filter 0.3s ease; }
     .product { width: 220px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; padding: 15px; display: flex; flex-direction: column; align-items: center; }
     .product img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; }
@@ -15,7 +15,7 @@
     .modal-bg, .loader-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .modal, .loader-box { background: white; padding: 20px; border-radius: 12px; text-align: center; min-width: 300px; }
     select { font-size: 14px; }
-    #blur { filter: blur(6px); pointer-events: none; user-select: none; }
+    .blurred { filter: blur(6px); pointer-events: none; user-select: none; }
     #loader-bar { width: 100%; background: #eee; border-radius: 10px; overflow: hidden; margin-top: 10px; }
     #loader-progress { height: 20px; background: #4CAF50; width: 0; transition: width 0.1s; }
     #payment-window { display: none; background: white; border-radius: 12px; padding: 20px; max-width: 400px; margin: 20px auto; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; }
@@ -40,7 +40,7 @@
 </div>
 
 <h1 id="title">Витрина</h1>
-<div id="blur">
+<div id="main-content">
   <div id="loader" class="loader-modal hidden">
     <div class="loader-box">
       <h3>Загрузка...</h3>
@@ -66,7 +66,7 @@ const continueBtn = document.getElementById('continue-btn');
 const modalBg = document.getElementById('modal-bg');
 const loaderModal = document.getElementById('loader');
 const loaderProgress = document.getElementById('loader-progress');
-const blurContent = document.getElementById('blur');
+const mainContent = document.getElementById('main-content');
 const title = document.getElementById('title');
 const productsDiv = document.getElementById('products');
 const paymentWindow = document.getElementById('payment-window');
@@ -74,8 +74,8 @@ const orderInfo = document.getElementById('order-info');
 const timer = document.getElementById('timer');
 
 const metros = {
-  "Москва": ["Курская", "Киевская", "ВДНХ", "Тверская", "Красносельская", "Бауманская", "Пушкинская"],
-  "Санкт-Петербург": ["Площадь Восстания", "Гостиный двор", "Невский проспект", "Владимирская", "Сенная площадь"]
+  "Москва": ["Авиамоторная", "Автозаводская", "Академическая", "Александровский сад", "Алтуфьево", "Арбатская", "Аэропорт", "Бауманская", "Белорусская", "Библиотека имени Ленина", "Ботанический сад", "Братиславская", "ВДНХ", "Варшавская", "Владыкино", "Водный стадион", "Войковская", "Волгоградский проспект", "Волжская", "Выхино"],
+  "Санкт-Петербург": ["Автово", "Адмиралтейская", "Академическая", "Балтийская", "Василеостровская", "Владимирская", "Выборгская", "Горьковская", "Гостиный двор", "Гражданский проспект", "Девяткино", "Достоевская", "Звездная", "Кировский завод", "Комендантский проспект", "Крестовский остров", "Купчино", "Ладожская", "Ленинский проспект", "Лесная"]
 };
 
 citySelect.addEventListener("change", () => {
@@ -91,16 +91,19 @@ metroSelect.addEventListener("change", () => {
 });
 
 continueBtn.addEventListener("click", () => {
+  document.getElementById('title').classList.add('blurred');
   modalBg.style.display = "none";
   showLoader(() => {
-    blurContent.style.filter = "none";
+    mainContent.classList.remove("blurred");
+    title.classList.remove("blurred");
+    loaderModal.classList.add("hidden");
+    loaderProgress.style.width = "0%";
     title.textContent = "Витрина для " + metroSelect.value;
     renderProducts();
   });
 });
 
 function showLoader(callback) {
-  blurContent.style.filter = "blur(6px)";
   loaderModal.classList.remove("hidden");
   let progress = 0;
   const interval = setInterval(() => {
@@ -108,8 +111,6 @@ function showLoader(callback) {
     loaderProgress.style.width = progress + "%";
     if (progress >= 100) {
       clearInterval(interval);
-      loaderModal.classList.add("hidden");
-      loaderProgress.style.width = "0%";
       callback();
     }
   }, 50);
@@ -132,6 +133,8 @@ function renderProducts() {
 
 function payNow(id) {
   showLoader(() => {
+    loaderModal.classList.add("hidden");
+    loaderProgress.style.width = "0%";
     const now = new Date();
     const orderID = Math.floor(100000 + Math.random() * 900000);
     const dateStr = now.toLocaleString("ru-RU");
