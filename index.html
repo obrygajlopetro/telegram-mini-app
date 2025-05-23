@@ -2,19 +2,24 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Витрина</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f9f9f9; }
-    h1 { font-size: 24px; margin-bottom: 20px; }
-    .product { display: inline-block; width: 180px; margin: 10px; padding: 10px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); vertical-align: top; }
-    .product img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; }
-    .product select { margin-top: 10px; width: 100%; }
-    .loader { text-align: center; margin-top: 20px; display: none; }
-    .button { background: #4CAF50; color: white; padding: 10px 20px; margin: 10px 5px; border: none; border-radius: 5px; cursor: pointer; }
-    .hidden { display: none; }
-    .modal-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
-    .modal { background: white; padding: 20px; border-radius: 10px; text-align: center; width: 300px; }
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f1f3f6; }
+    h1 { font-size: 28px; margin: 20px; text-align: center; }
+    .container { padding: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; filter: none; transition: filter 0.3s ease; }
+    .product { width: 220px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+    .product img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; }
+    .product select, .product button { width: 100%; margin-top: 10px; padding: 8px; border-radius: 8px; border: 1px solid #ccc; }
+    .product button { background: #4CAF50; color: white; border: none; cursor: pointer; font-weight: bold; }
+    .modal-bg, .loader-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
+    .modal, .loader-box { background: white; padding: 20px; border-radius: 12px; text-align: center; min-width: 300px; }
+    select { font-size: 14px; }
+    #blur { filter: blur(6px); pointer-events: none; user-select: none; }
+    #loader-bar { width: 100%; background: #eee; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+    #loader-progress { height: 20px; background: #4CAF50; width: 0; transition: width 0.1s; }
+    #payment-window { display: none; background: white; border-radius: 12px; padding: 20px; max-width: 400px; margin: 20px auto; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; }
+    #timer { font-size: 20px; color: red; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -25,7 +30,7 @@
     <select id="city-select">
       <option disabled selected>Город</option>
       <option>Москва</option>
-      <option>Питер</option>
+      <option>Санкт-Петербург</option>
     </select>
     <br><br>
     <select id="metro-select" class="hidden"></select>
@@ -35,69 +40,50 @@
 </div>
 
 <h1 id="title">Витрина</h1>
-
-<div id="loader" class="loader">⏳ Загрузка...</div>
-
-<div id="products" class="hidden">
-  <div class="product">
-    <img src="https://placehold.co/200x200" />
-    <div>
-      <select>
-        <option>1 шт.</option>
-        <option>2 шт.</option>
-        <option>3 шт.</option>
-        <option>4 шт.</option>
-        <option>5 шт.</option>
-      </select>
+<div id="blur">
+  <div id="loader" class="loader-modal hidden">
+    <div class="loader-box">
+      <h3>Загрузка...</h3>
+      <div id="loader-bar"><div id="loader-progress"></div></div>
     </div>
   </div>
-  <div class="product">
-    <img src="https://placehold.co/200x200?text=Товар+2" />
-    <div>
-      <select>
-        <option>1 шт.</option>
-        <option>2 шт.</option>
-        <option>3 шт.</option>
-        <option>4 шт.</option>
-        <option>5 шт.</option>
-      </select>
-    </div>
-  </div>
-  <!-- Можно добавить больше товаров -->
+
+  <div class="container" id="products"></div>
 </div>
 
-<div id="action-buttons" class="hidden">
-  <button class="button" id="pay-btn">Оплатить</button>
-  <button class="button" id="check-btn">Проверить оплату</button>
+<div id="payment-window">
+  <h3>Оплата заказа</h3>
+  <p id="order-info"></p>
+  <p><b>Номер карты:</b> 1234 5678 9012 3456</p>
+  <div id="timer">15:00</div>
+  <button class="button" onclick="checkPayment()">Проверить оплату</button>
 </div>
-
-<div id="status" class="loader"></div>
 
 <script>
 const citySelect = document.getElementById('city-select');
 const metroSelect = document.getElementById('metro-select');
-const modalBg = document.getElementById('modal-bg');
 const continueBtn = document.getElementById('continue-btn');
-const loader = document.getElementById('loader');
-const products = document.getElementById('products');
+const modalBg = document.getElementById('modal-bg');
+const loaderModal = document.getElementById('loader');
+const loaderProgress = document.getElementById('loader-progress');
+const blurContent = document.getElementById('blur');
 const title = document.getElementById('title');
-const status = document.getElementById('status');
-const payBtn = document.getElementById('pay-btn');
-const checkBtn = document.getElementById('check-btn');
-const actionButtons = document.getElementById('action-buttons');
+const productsDiv = document.getElementById('products');
+const paymentWindow = document.getElementById('payment-window');
+const orderInfo = document.getElementById('order-info');
+const timer = document.getElementById('timer');
 
 const metros = {
-  "Москва": ["Курская", "Киевская", "ВДНХ"],
-  "Питер": ["Площадь Восстания", "Гостиный двор", "Невский проспект"]
+  "Москва": ["Курская", "Киевская", "ВДНХ", "Тверская", "Красносельская", "Бауманская", "Пушкинская"],
+  "Санкт-Петербург": ["Площадь Восстания", "Гостиный двор", "Невский проспект", "Владимирская", "Сенная площадь"]
 };
 
 citySelect.addEventListener("change", () => {
-  metroSelect.innerHTML = `<option disabled selected>Метро</option>`;
+  metroSelect.innerHTML = '<option disabled selected>Станция метро</option>';
   metros[citySelect.value].forEach(m => {
     metroSelect.innerHTML += `<option>${m}</option>`;
   });
   metroSelect.classList.remove("hidden");
-  continueBtn.classList.add("hidden");
 });
 
 metroSelect.addEventListener("change", () => {
@@ -106,32 +92,73 @@ metroSelect.addEventListener("change", () => {
 
 continueBtn.addEventListener("click", () => {
   modalBg.style.display = "none";
-  loader.style.display = "block";
-  setTimeout(() => {
-    loader.style.display = "none";
-    products.classList.remove("hidden");
-    actionButtons.classList.remove("hidden");
+  showLoader(() => {
+    blurContent.style.filter = "none";
     title.textContent = "Витрина для " + metroSelect.value;
-  }, 1200);
+    renderProducts();
+  });
 });
 
-payBtn.addEventListener("click", () => {
-  status.style.display = "block";
-  status.textContent = "🔄 Обработка оплаты...";
-  setTimeout(() => {
-    status.style.display = "none";
-    alert("❌ Платёж не найден. Пожалуйста, отправьте квитанцию боту.");
-  }, 2000);
-});
+function showLoader(callback) {
+  blurContent.style.filter = "blur(6px)";
+  loaderModal.classList.remove("hidden");
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += 5;
+    loaderProgress.style.width = progress + "%";
+    if (progress >= 100) {
+      clearInterval(interval);
+      loaderModal.classList.add("hidden");
+      loaderProgress.style.width = "0%";
+      callback();
+    }
+  }, 50);
+}
 
-checkBtn.addEventListener("click", () => {
-  const code = Math.floor(10000 + Math.random() * 90000);
-  status.textContent = "♻️ Проверка платежа #" + code;
-  status.style.display = "block";
-  setTimeout(() => {
-    status.textContent = "❌ Платёж не найден. Пожалуйста, отправьте квитанцию боту.";
-  }, 2000);
-});
+function renderProducts() {
+  productsDiv.innerHTML = "";
+  for (let i = 1; i <= 10; i++) {
+    const product = document.createElement("div");
+    product.className = "product";
+    product.innerHTML = `
+      <img src="https://placehold.co/200x200?text=Товар+${i}" />
+      <select><option>1 шт.</option><option>2 шт.</option><option>3 шт.</option><option>4 шт.</option><option>5 шт.</option></select>
+      <select><option>Самовывоз</option><option>Адресная доставка</option><option>Отправка почтой</option></select>
+      <button onclick="payNow(${i})">Оплатить</button>
+    `;
+    productsDiv.appendChild(product);
+  }
+}
+
+function payNow(id) {
+  showLoader(() => {
+    const now = new Date();
+    const orderID = Math.floor(100000 + Math.random() * 900000);
+    const dateStr = now.toLocaleString("ru-RU");
+    paymentWindow.style.display = "block";
+    orderInfo.innerHTML = `<b>Заказ #${orderID}</b><br>Дата: ${dateStr}`;
+    startTimer();
+  });
+}
+
+function startTimer() {
+  let minutes = 15;
+  let seconds = 0;
+  const interval = setInterval(() => {
+    seconds--;
+    if (seconds < 0) { seconds = 59; minutes--; }
+    if (minutes < 0) {
+      clearInterval(interval);
+      timer.textContent = "⛔ Время вышло";
+    } else {
+      timer.textContent = `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    }
+  }, 1000);
+}
+
+function checkPayment() {
+  alert("❌ Платёж не найден. Пожалуйста, отправьте квитанцию боту.");
+}
 </script>
 </body>
 </html>
