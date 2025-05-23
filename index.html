@@ -120,7 +120,7 @@
 
 <!-- Лоадбар после покупки -->
 <div id="order-loader" class="order-loader" style="display:none;">
-  <p id="order-loader-text">Загрузка данных по заказу...</p>
+  <p id="order-loader-text">🗳 Загрузка данных по заказу...</p>
   <div class="progress-container">
     <div id="order-progress-bar" class="progress-bar"></div>
   </div>
@@ -176,7 +176,7 @@
   document.getElementById("confirm-btn").addEventListener("click", () => {
     selectedMetro = metroSelect.value;
     modal.style.display = "none";
-    loaderText.textContent = `Загрузка витрины для станции метро ${selectedMetro}`;
+    loaderText.textContent = `📦 Загрузка витрины для станции метро ${selectedMetro}...`;
     loader.style.display = "block";
     let progress = 0;
     const duration = 3000 + Math.random() * 7000;
@@ -251,14 +251,14 @@
     const timeNow = new Date().toLocaleTimeString();
     const dateNow = new Date().toLocaleDateString();
     paymentScreen.innerHTML = `
-      <h3>Оплата заказа #${savedOrderId}</h3>
+      <h3>♻️ Оплата заказа #${savedOrderId}</h3>
       <p>⌞Время и дата: ${timeNow}, ${dateNow}</p>
       <p>⌞Позиция: ${name}</p>
       <p>⌞Метро: ${selectedMetro}</p>
       <p>⌞Метод доставки: ${deliveryMethod}</p>
       <br>
-      <p><strong>Реквизиты для оплаты:</strong> ${card}</p>
-      <p><strong>Сумма:</strong> ${sum}₽</p>
+      <p><strong>💳 Реквизиты для оплаты:</strong> ${card}</p>
+      <p><strong>💵 Сумма:</strong> ${sum}₽</p>
       <p id="timer"></p>
       <button id="check-payment-btn" class="button">Проверить оплату</button>
       <button id="restart-btn" class="button">Создать заказ заново</button>
