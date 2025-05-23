@@ -2,176 +2,96 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Выбор города и метро</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background-color: black;
-      color: white;
-    }
-    .centered-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-      background-color: black;
-    }
-    .selector-box {
-      background-color: #2a2a2a;
-      padding: 30px;
-      border-radius: 12px;
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
-    }
-    .selector-box img {
-      width: 128px;
-      height: 64px;
-      object-fit: cover;
-      margin-bottom: 15px;
-    }
-    .selector-box h2 {
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-    .selector-box select, .selector-box button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-    .selector-box select {
-      background-color: #444;
-      color: white;
-    }
-    .selector-box button {
-      background-color: white;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    /* Loader styles */
-    #loader-screen {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: black;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    #loader-bar-container {
-      width: 80%;
-      max-width: 400px;
-      height: 8px;
-      background: #333;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    #loader-bar {
-      height: 100%;
-      width: 0%;
-      background: white;
-      transition: width 0.1s;
-    }
-  </style>
+  <title>Выбор локации</title>
 </head>
-<body>
+<body style="margin:0; background:#000; color:white; font-family:sans-serif;">
 
-<div class="centered-box" id="select-screen">
-  <div class="selector-box">
-    <img src="https://via.placeholder.com/128x64" alt="Баннер">
-    <h2>Выбери город и станцию метро</h2>
-    <select id="city-select">
+  <!-- Модальное окно выбора города и метро -->
+  <div id="city-metro-modal" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+      background:#1e1e1e;border-radius:10px;padding:20px;width:90%;max-width:400px;text-align:center;">
+    <img src="https://via.placeholder.com/128x64" alt="Баннер" style="width:128px;height:64px;object-fit:contain;margin-bottom:10px;">
+    <h2 style="font-size:16px;margin:10px 0;">Выбери город и станцию метро</h2>
+
+    <select id="city-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;">
       <option value="moscow">Москва</option>
       <option value="spb">Санкт-Петербург</option>
     </select>
-    <select id="metro-select"></select>
-    <button onclick="submitSelection()">Подтвердить</button>
+
+    <select id="metro-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;"></select>
+
+    <button id="confirm-btn" style="width:100%;padding:10px;margin-top:10px;border-radius:5px;border:none;background:#444;color:white;">
+      Подтвердить
+    </button>
   </div>
-</div>
 
-<!-- Лоадбар -->
-<div id="loader-screen">
-  <div id="loader-text" style="margin-bottom: 20px; font-size: 18px;">Загрузка витрины...</div>
-  <div id="loader-bar-container">
-    <div id="loader-bar"></div>
+  <!-- Лоадбар -->
+  <div id="loader" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      background:#1e1e1e; padding:20px; border-radius:10px; width:90%; max-width:400px; text-align:center;">
+    <div id="loader-text" style="margin-bottom:10px;">Загрузка...</div>
+    <div style="background:#444; height:20px; border-radius:10px; overflow:hidden;">
+      <div id="loader-bar" style="height:100%; width:0%; background:white; transition:width 0.1s;"></div>
+    </div>
   </div>
-</div>
 
-<script>
-  const moscowStations = [
-    "Арбатская", "Библиотека имени Ленина", "Киевская", "Краснопресненская",
-    "Кропоткинская", "Октябрьская", "Парк Культуры", "Смоленская", "Университет"
-  ];
-  const spbStations = [
-    "Адмиралтейская", "Балтийская", "Василеостровская", "Гостиный двор",
-    "Звенигородская", "Комендантский проспект", "Невский проспект", "Площадь Ленина", "Технологический институт"
-  ];
+  <script>
+    const citySelect = document.getElementById("city-select");
+    const metroSelect = document.getElementById("metro-select");
+    const confirmBtn = document.getElementById("confirm-btn");
+    const modal = document.getElementById("city-metro-modal");
+    const loader = document.getElementById("loader");
+    const loaderText = document.getElementById("loader-text");
+    const loaderBar = document.getElementById("loader-bar");
 
-  const citySelect = document.getElementById("city-select");
-  const metroSelect = document.getElementById("metro-select");
+    const metroStations = {
+      moscow: [...], // <- сюда вставь список станций из предыдущего кода
+      spb: [...]
+    };
 
-  function updateMetroOptions() {
-    metroSelect.innerHTML = "";
-    const stations = citySelect.value === "moscow" ? moscowStations : spbStations;
-    stations.forEach(station => {
-      const option = document.createElement("option");
-      option.value = station;
-      option.textContent = station;
-      metroSelect.appendChild(option);
+    function updateMetroOptions(city) {
+      metroSelect.innerHTML = "";
+      metroStations[city].forEach(station => {
+        const option = document.createElement("option");
+        option.value = station;
+        option.textContent = station;
+        metroSelect.appendChild(option);
+      });
+    }
+
+    citySelect.addEventListener("change", () => {
+      updateMetroOptions(citySelect.value);
     });
-  }
 
-  citySelect.addEventListener("change", updateMetroOptions);
-  updateMetroOptions(); // Initial call
-
-  function submitSelection() {
-    const selectedMetro = metroSelect.value;
-    document.getElementById("select-screen").style.display = "none";
-    startLoader(selectedMetro, () => {
-      alert("Витрина загружена! (Здесь появится следующий блок)");
-      // Здесь вызовите следующий шаг — например, показать витрину
+    document.addEventListener("DOMContentLoaded", () => {
+      updateMetroOptions(citySelect.value);
     });
-  }
 
-  function startLoader(stationName, onComplete) {
-    const loaderScreen = document.getElementById('loader-screen');
-    const loaderText = document.getElementById('loader-text');
-    const loaderBar = document.getElementById('loader-bar');
+    confirmBtn.addEventListener("click", () => {
+      const selectedCity = citySelect.value;
+      const selectedMetro = metroSelect.value;
 
-    loaderText.textContent = `Загрузка витрины для станции метро ${stationName}...`;
-    loaderScreen.style.display = 'flex';
+      modal.style.display = "none";
+      loader.style.display = "block";
+      loaderText.textContent = `Загрузка витрины для станции метро ${selectedMetro}...`;
 
-    let progress = 0;
-    const duration = Math.random() * (10000 - 3000) + 3000; // 3–10 сек
-    const interval = 30;
-    const increment = 100 / (duration / interval);
+      const duration = 3000 + Math.random() * 7000; // от 3 до 10 секунд
+      let start = null;
 
-    const intervalId = setInterval(() => {
-      progress += increment;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(intervalId);
-        setTimeout(() => {
-          loaderScreen.style.display = 'none';
-          loaderBar.style.width = '0%';
-          if (typeof onComplete === 'function') onComplete();
-        }, 300);
+      function animate(timestamp) {
+        if (!start) start = timestamp;
+        const elapsed = timestamp - start;
+        const progress = Math.min((elapsed / duration) * 100, 100);
+        loaderBar.style.width = progress + "%";
+
+        if (progress < 100) {
+          requestAnimationFrame(animate);
+        } else {
+          loaderText.textContent = "Готово!";
+          // Следующий шаг можно вызвать здесь
+        }
       }
-      loaderBar.style.width = `${progress}%`;
-    }, interval);
-  }
-</script>
 
+      requestAnimationFrame(animate);
+    });
+  </script>
 </body>
 </html>
