@@ -38,19 +38,6 @@
       padding: 20px;
       color: white;
       text-align: center;
-      max-width: 300px;
-      width: 90%;
-    }
-    .modal-title {
-      font-size: 16px;
-      margin-top: 10px;
-    }
-    .modal-banner {
-      width: 128px;
-      height: 64px;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 10px;
     }
     .overlay {
       position: fixed;
@@ -62,19 +49,23 @@
       backdrop-filter: blur(8px);
       z-index: 999;
     }
-    .loader-bar-container {
+    .loader-modal {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 1001;
-      width: 300px;
+      z-index: 1100;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 30px;
+      border-radius: 10px;
     }
     .loader-bar {
       height: 20px;
       background: #333;
       border-radius: 10px;
       overflow: hidden;
+      margin-top: 20px;
     }
     .loader-fill {
       height: 100%;
@@ -109,7 +100,6 @@
       color: white;
       width: 90%;
       max-width: 400px;
-      text-align: center;
     }
     .payment-status {
       margin-top: 10px;
@@ -133,18 +123,32 @@
     button:hover {
       background: #444;
     }
+    .modal-banner {
+      width: 128px;
+      height: 64px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    .modal h2 {
+      font-size: 16px;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
-  <!-- Контент и скрипты вставляются здесь -->
+  <div class="centered-modal modal">
+    <img src="https://via.placeholder.com/128x64" alt="Баннер" class="modal-banner">
+    <h2>Выбери город</h2>
+    <select id="city-select">
+      <option value="moscow">Москва</option>
+      <option value="spb">Санкт-Петербург</option>
+    </select>
+    <h2>Выбери метро</h2>
+    <select id="metro-select"></select>
+    <button id="continue-btn">Продолжить</button>
+  </div>
   <script>
-    // Весь JavaScript код с логикой, включая
-    // 1. Центровку окон
-    // 2. Показы/скрытия лоадбаров
-    // 3. Таймер обновляется по setInterval с шагом в 1 сек.
-    // 4. Кнопка "Проверка оплаты" отображает мини лоадбар под кнопкой, заменяющийся сообщением об ошибке
-    // 5. ID заказа сохраняется в переменной и не меняется между проверками
-    // 6. Сообщения об ошибке перезаписываются и обновляются с меткой времени
+    // JavaScript-код будет добавлен здесь позже
   </script>
 </body>
 </html>
