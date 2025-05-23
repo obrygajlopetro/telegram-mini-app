@@ -12,6 +12,7 @@
     .product img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; }
     .product select, .product button { margin-top: 10px; width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; }
     .product button { background: #28a745; color: white; font-weight: bold; border: none; cursor: pointer; }
+    .price { margin-top: 10px; font-weight: bold; }
 
     .overlay, .loader-screen, .payment-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .loader-box { background: white; padding: 20px; border-radius: 10px; text-align: center; min-width: 300px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -60,9 +61,11 @@
 <div id="payment-modal" class="payment-modal hidden">
   <div class="payment-modal-content">
     <p id="payment-info"></p>
+    <p id="payment-amount"></p>
     <p><strong>Реквизиты для оплаты:</strong><br>1234 5678 9012 3456</p>
     <div id="timer">15:00</div>
     <button onclick="checkPayment()">Проверить оплату</button>
+    <button onclick="restartOrder()">Оформить заново</button>
     <div id="check-message"></div>
   </div>
 </div>
@@ -72,6 +75,9 @@ const stations = {
   'Москва': ["Авиамоторная", "Автозаводская", "Академическая", "Арбатская", "Аэропорт", "Бауманская", "Бибирево", "Библиотека имени Ленина", "Борисово", "Братиславская", "ВДНХ", "Варшавская", "Владыкино", "Водный стадион", "Войковская", "Волгоградский проспект", "Волжская", "Выхино"],
   'Санкт-Петербург': ["Автово", "Адмиралтейская", "Академическая", "Балтийская", "Василеостровская", "Владимирская", "Выборгская", "Горьковская", "Гостиный двор", "Гражданский проспект", "Девяткино", "Достоевская", "Звёздная", "Кировский завод", "Комендантский проспект", "Крестовский остров", "Купчино", "Ладожская", "Ленинский проспект", "Лесная"]
 };
+
+let selectedProductPrice = 0;
+let selectedProductQuantity = 1;
 
 const citySelect = document.getElementById('city');
 const metroSelect = document.getElementById('metro');
@@ -84,6 +90,7 @@ const header = document.getElementById('header');
 const loaderProgress = document.getElementById('loader-progress');
 const paymentModal = document.getElementById('payment-modal');
 const paymentInfo = document.getElementById('payment-info');
+const paymentAmount = document.getElementById('payment-amount');
 const checkMessage = document.getElementById('check-message');
 
 citySelect.addEventListener('change', () => {
@@ -110,6 +117,7 @@ startButton.addEventListener('click', () => {
 
 function simulateLoading(callback) {
   let percent = 0;
+  loaderProgress.style.width = '0%';
   const interval = setInterval(() => {
     percent += 2;
     loaderProgress.style.width = percent + '%';
@@ -121,20 +129,37 @@ function simulateLoading(callback) {
 }
 
 function renderProducts() {
+  products.innerHTML = '';
   for (let i = 1; i <= 10; i++) {
+    const price = Math.floor(100 + Math.random() * 900); // 100 - 999
     const card = document.createElement('div');
     card.className = 'product';
     card.innerHTML = `
       <img src="https://placehold.co/200x200?text=Товар+${i}" alt="Товар ${i}">
-      <select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      <div class="price">Цена: ${price} ₽</div>
+      <select onchange="updateSelection(this, ${price})">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
       <select><option>Самовывоз</option><option>Адресная доставка</option><option>Почта</option></select>
-      <button onclick="startPayment(${i})">Оплатить</button>
+      <button onclick="startPayment(${price})">Оплатить</button>
     `;
     products.appendChild(card);
   }
 }
 
-function startPayment(id) {
+function updateSelection(selectElement, price) {
+  selectedProductQuantity = parseInt(selectElement.value);
+  selectedProductPrice = price;
+}
+
+function startPayment(price) {
+  selectedProductPrice = price;
+  const quantitySelect = event.target.parentElement.querySelector('select');
+  selectedProductQuantity = parseInt(quantitySelect.value);
   main.classList.add('blurred');
   loader.classList.remove('hidden');
   simulateLoading(() => {
@@ -147,7 +172,9 @@ function startPayment(id) {
 function showPaymentWindow() {
   const now = new Date();
   const orderId = Math.floor(100000 + Math.random() * 900000);
+  const total = selectedProductPrice * selectedProductQuantity;
   paymentInfo.innerHTML = `<strong>Дата:</strong> ${now.toLocaleString()}<br><strong>ID заказа:</strong> ${orderId}`;
+  paymentAmount.innerHTML = `<strong>Сумма к оплате:</strong> ${total} ₽`;
   paymentModal.classList.remove('hidden');
   startTimer();
 }
@@ -178,6 +205,12 @@ function checkPayment() {
   setTimeout(() => {
     checkMessage.innerHTML = `❌ Платёж не найден. Пожалуйста, отправьте квитанцию боту.`;
   }, 2000);
+}
+
+function restartOrder() {
+  paymentModal.classList.add('hidden');
+  main.classList.add('hidden');
+  citySelector.classList.remove('hidden');
 }
 </script>
 </body>
