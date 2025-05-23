@@ -88,6 +88,15 @@
       margin-top: 10px;
       font-size: 14px;
     }
+    .blue-box {
+  background: #001f3f;
+  border: 1px solid #3399ff;
+  border-radius: 8px;
+  padding: 10px;
+  color: #aad8ff;
+  margin-top: 10px;
+  font-size: 14px;
+}
   </style>
 </head>
 <body>
@@ -267,16 +276,20 @@
     storefront.style.display = "none";
     paymentScreen.style.display = "block";
 
-    const timer = document.getElementById("timer");
-    let remaining = 15 * 60;
-    setInterval(() => {
-      if (remaining > 0) {
-        const min = Math.floor(remaining / 60);
-        const sec = remaining % 60;
-        timer.textContent = `До истечения времени оплаты: ${min}:${sec.toString().padStart(2, '0')}`;
-        remaining--;
-      }
-    }, 1000);
+   const timer = document.getElementById("timer");
+let remaining = 15 * 60;
+const timerBox = document.createElement("div");
+timerBox.className = "blue-box";
+timer.appendChild(timerBox);
+
+setInterval(() => {
+  if (remaining > 0) {
+    const min = Math.floor(remaining / 60);
+    const sec = remaining % 60;
+    timerBox.textContent = `До истечения времени оплаты: ${min}:${sec.toString().padStart(2, '0')}`;
+    remaining--;
+  }
+}, 1000);
     
     document.getElementById("check-payment-btn").onclick = () => {
       const messageBox = document.getElementById("payment-message");
