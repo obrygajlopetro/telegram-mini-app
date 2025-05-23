@@ -233,7 +233,7 @@
     const orderLoader = document.getElementById("order-loader");
     const orderText = document.getElementById("order-loader-text");
     const orderProgress = document.getElementById("order-progress-bar");
-    orderText.textContent = `Загрузка данных по заказу #${savedOrderId}`;
+    orderText.textContent = `📑 Загрузка данных по заказу #${savedOrderId}...`;
     document.body.classList.add("blurred");
     orderLoader.style.display = "block";
     orderProgress.style.width = "0%";
@@ -296,7 +296,7 @@ setInterval(() => {
       const delay = 2000 + Math.random() * 4000;
       setTimeout(() => {
         lastCheckTime = new Date().toLocaleTimeString();
-        messageBox.innerHTML = `<div class='yellow-box'> ❌ Оплата на сумму ${sum}₽ по реквизитам ${card} не обнаружена. Убедитесь, что платёж проведён банком или отправьте боту чек об оплате. <br> Последнее обновление ${lastCheckTime}</div>`;
+        yellow-box.innerHTML = `<div class='yellow-box'> ❌ Оплата на сумму ${sum}₽ по реквизитам ${card} не обнаружена. Убедитесь, что платёж проведён банком или отправьте боту чек об оплате. <br> Последнее обновление ${lastCheckTime}</div>`;
       }, delay);
     };
     
