@@ -120,7 +120,7 @@
 
 <!-- Лоадбар после покупки -->
 <div id="order-loader" class="order-loader" style="display:none;">
-  <p id="order-loader-text">🗳 Загрузка данных по заказу...</p>
+  <p id="order-loader-text"> 📑 Загрузка данных по заказу...</p>
   <div class="progress-container">
     <div id="order-progress-bar" class="progress-bar"></div>
   </div>
@@ -284,7 +284,7 @@
       const delay = 2000 + Math.random() * 4000;
       setTimeout(() => {
         lastCheckTime = new Date().toLocaleTimeString();
-        yellowbox.innerHTML = `<div class='yellow-box'> ❌ Оплата на сумму ${sum}₽ по реквизитам ${card} не обнаружена. Убедитесь, что платёж проведён банком или отправьте боту чек об оплате. <br> Последнее обновление ${lastCheckTime}</div>`;
+        MessageBox.innerHTML = `<div class='yellow-box'> ❌ Оплата на сумму ${sum}₽ по реквизитам ${card} не обнаружена. Убедитесь, что платёж проведён банком или отправьте боту чек об оплате. <br> Последнее обновление ${lastCheckTime}</div>`;
       }, delay);
     };
     
