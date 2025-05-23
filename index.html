@@ -1,3 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Витрина</title>
+  <style>
+    body {
+      margin: 0;
+      background: #121212;
+      color: white;
+      font-family: sans-serif;
+    }
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
+      background: #444;
+      color: white;
+      cursor: pointer;
+    }
+    .loader, .order-loader, .payment-screen {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .progress-container {
+      width: 100%;
+      background: #333;
+      border-radius: 5px;
+      overflow: hidden;
+      height: 10px;
+    }
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: white;
+    }
+    .blurred {
+      filter: blur(6px);
+      pointer-events: none;
+      user-select: none;
+    }
+    .yellow-box {
+      background: #332f00;
+      border: 1px solid yellow;
+      border-radius: 8px;
+      padding: 10px;
+      color: yellow;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
 <!-- Блок выбора города и метро -->
 
 <div id="city-metro-modal" class="modal">
@@ -11,9 +90,7 @@
   <button id="confirm-btn" class="button">Подтвердить</button>
 </div>
 
-
 <!-- Лоадбар -->
-
 <div id="loader" class="loader" style="display:none;">
   <p id="loader-text">Загрузка витрины...</p>
   <div class="progress-container">
@@ -21,17 +98,13 @@
   </div>
 </div>
 
-
 <!-- Витрина товаров -->
-
 <div id="storefront" style="display:none; padding:20px;">
   <h2 id="store-title" style="text-align:center;">Витрина товаров</h2>
   <div id="product-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px;margin-top:20px;"></div>
 </div>
 
-
 <!-- Лоадбар после покупки -->
-
 <div id="order-loader" class="order-loader" style="display:none;">
   <p id="order-loader-text">Загрузка данных по заказу...</p>
   <div class="progress-container">
@@ -39,9 +112,7 @@
   </div>
 </div>
 
-
 <!-- Экран оплаты -->
-
 <div id="payment-screen" class="payment-screen" style="display:none;"></div>
 
 <script>
@@ -58,7 +129,6 @@
   let selectedMetro = "";
   let savedOrderId = null;
   let lastCheckTime = null;
-
 
   const products = [
     "Красный кубик", "Синий шар", "Жёлтый треугольник", "Зелёный цилиндр",
@@ -111,7 +181,6 @@
       }
     }
     animateLoader();
-
   });
 
   function renderProducts() {
@@ -211,7 +280,6 @@
       paymentScreen.style.display = "none";
       modal.style.display = "block";
     };
-
   }
 
   document.addEventListener("click", (e) => {
