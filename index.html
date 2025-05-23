@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Выбор локации</title>
+  <title>Витрина</title>
   <style>
     body {
       margin: 0;
@@ -10,21 +10,20 @@
       color: white;
       font-family: sans-serif;
     }
-
-    #city-metro-modal, #loader {
+    #city-metro-modal, #loader, #order-loader, #product-showcase {
+      display: none;
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      z-index: 1000;
       background: #1e1e1e;
       border-radius: 10px;
       padding: 20px;
       width: 90%;
       max-width: 400px;
       text-align: center;
-      z-index: 1000;
     }
-
     select, button {
       width: 100%;
       padding: 10px;
@@ -34,29 +33,45 @@
       background: #333;
       color: white;
     }
-
-    button {
-      background: #444;
-    }
-
-    #loader {
-      display: none;
-    }
-
-    .progress-bar {
+    #progress, #order-progress {
       width: 100%;
       height: 10px;
-      background: #333;
+      background: #444;
       border-radius: 5px;
       overflow: hidden;
-      margin-top: 15px;
+      margin-top: 10px;
     }
-
-    .progress-fill {
+    .bar {
       height: 100%;
-      width: 0%;
+      width: 0;
       background: white;
       transition: width 0.2s;
+    }
+    #product-showcase {
+      display: none;
+      position: static;
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 10px;
+    }
+    .product {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 10px;
+      text-align: center;
+      flex: 1 0 21%;
+    }
+    .product img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .product-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
   </style>
 </head>
@@ -65,38 +80,55 @@
   <div id="city-metro-modal">
     <img src="https://via.placeholder.com/128x64" alt="Баннер" style="width:128px;height:64px;object-fit:contain;margin-bottom:10px;">
     <h2 style="font-size:16px;margin:10px 0;">Выбери город и станцию метро</h2>
-
     <select id="city-select">
       <option value="moscow">Москва</option>
       <option value="spb">Санкт-Петербург</option>
     </select>
-
-    <select id="metro-select">
-      <!-- Станции загружаются скриптом -->
-    </select>
-
+    <select id="metro-select"></select>
     <button id="confirm-btn">Подтвердить</button>
   </div>
 
   <div id="loader">
-    <div id="loader-text">Загрузка витрины...</div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill"></div>
-    </div>
+    <h2 id="loader-text"></h2>
+    <div id="progress"><div class="bar" id="progress-bar"></div></div>
+  </div>
+
+  <div id="product-showcase">
+    <h2 id="showcase-title"></h2>
+    <div class="product-container" id="products"></div>
+  </div>
+
+  <div id="order-loader">
+    <h2 id="order-loader-text"></h2>
+    <div id="order-progress"><div class="bar" id="order-progress-bar"></div></div>
   </div>
 
   <script>
     const citySelect = document.getElementById("city-select");
     const metroSelect = document.getElementById("metro-select");
     const confirmBtn = document.getElementById("confirm-btn");
-    const modal = document.getElementById("city-metro-modal");
+    const cityMetroModal = document.getElementById("city-metro-modal");
     const loader = document.getElementById("loader");
     const loaderText = document.getElementById("loader-text");
-    const progressFill = document.getElementById("progress-fill");
+    const progressBar = document.getElementById("progress-bar");
+    const productShowcase = document.getElementById("product-showcase");
+    const showcaseTitle = document.getElementById("showcase-title");
+    const products = document.getElementById("products");
+    const orderLoader = document.getElementById("order-loader");
+    const orderLoaderText = document.getElementById("order-loader-text");
+    const orderProgressBar = document.getElementById("order-progress-bar");
+
+    let selectedMetro = "";
+    let orderId = null;
+
+    const productData = [
+      "Пицца Пепперони", "Суши Сет", "Бургер Классик", "Куриные крылья", "Салат Цезарь",
+      "Шаурма XXL", "Ролл Калифорния", "Лапша Вок", "Греческий салат", "Тирамису"
+    ];
 
     const metroStations = {
-      moscow: ["Авиамоторная", "Автозаводская", "Арбатская", "ВДНХ", "Выставочная"],
-      spb: ["Адмиралтейская", "Автово", "Балтийская", "Владимирская", "Гражданский проспект"]
+      moscow: ["Авиамоторная", "Арбатская", "Белорусская"],
+      spb: ["Адмиралтейская", "Балтийская", "Владимирская"]
     };
 
     function updateMetroOptions(city) {
@@ -109,36 +141,71 @@
       });
     }
 
-    citySelect.addEventListener("change", () => {
-      updateMetroOptions(citySelect.value);
-    });
+    citySelect.addEventListener("change", () => updateMetroOptions(citySelect.value));
 
-    document.addEventListener("DOMContentLoaded", () => {
-      updateMetroOptions(citySelect.value);
-    });
+    document.addEventListener("DOMContentLoaded", () => updateMetroOptions(citySelect.value));
 
     confirmBtn.addEventListener("click", () => {
-      const selectedMetro = metroSelect.value;
-      modal.style.display = "none";
+      selectedMetro = metroSelect.value;
+      cityMetroModal.style.display = "none";
       loader.style.display = "block";
-      loaderText.textContent = `Загрузка витрины для станции метро ${selectedMetro}...`;
-
-      const loadTime = Math.floor(Math.random() * 7000) + 3000; // 3000–10000 мс
-      let elapsed = 0;
-      const interval = 100;
-
-      const progress = setInterval(() => {
-        elapsed += interval;
-        const percent = Math.min((elapsed / loadTime) * 100, 100);
-        progressFill.style.width = percent + "%";
-
-        if (elapsed >= loadTime) {
-          clearInterval(progress);
-          loaderText.textContent = "Готово!";
-          // Здесь можно продолжить к следующему шагу
-        }
-      }, interval);
+      loaderText.textContent = `Загрузка витрины для станции метро ${selectedMetro}`;
+      simulateProgress(loader, progressBar, () => {
+        loader.style.display = "none";
+        productShowcase.style.display = "block";
+        showcaseTitle.textContent = `Витрина товаров для станции метро ${selectedMetro}`;
+        generateProducts();
+      });
     });
+
+    function simulateProgress(container, barElement, callback) {
+      let duration = Math.random() * 7000 + 3000;
+      let start = Date.now();
+      function update() {
+        let elapsed = Date.now() - start;
+        let percent = Math.min((elapsed / duration) * 100, 100);
+        barElement.style.width = percent + "%";
+        if (percent < 100) {
+          requestAnimationFrame(update);
+        } else {
+          setTimeout(callback, 500);
+        }
+      }
+      update();
+    }
+
+    function generateProducts() {
+      products.innerHTML = "";
+      for (let i = 0; i < 10; i++) {
+        const item = document.createElement("div");
+        item.className = "product";
+        item.innerHTML = `
+          <img src="https://via.placeholder.com/200" alt="product">
+          <h3>${productData[i]}</h3>
+          <p>Цена: ${(Math.random() * 1000 + 100).toFixed(0)} ₽</p>
+          <select>
+            ${[1,2,3,4,5].map(q => `<option value="${q}">${q}</option>`).join('')}
+          </select>
+          <select>
+            <option>Адресная доставка</option>
+            <option>Самовывоз</option>
+            <option>Почта</option>
+          </select>
+          <button onclick="startOrderLoader()">Купить</button>
+        `;
+        products.appendChild(item);
+      }
+    }
+
+    function startOrderLoader() {
+      if (!orderId) orderId = Math.floor(100000 + Math.random() * 900000);
+      orderLoaderText.textContent = `Загрузка данных по заказу #${orderId}`;
+      orderLoader.style.display = "block";
+      productShowcase.style.display = "none";
+      simulateProgress(orderLoader, orderProgressBar, () => {
+        // Здесь можно показать подтверждение или переход к следующему этапу
+      });
+    }
   </script>
 </body>
 </html>
