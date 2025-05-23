@@ -1,97 +1,92 @@
-<!-- Блок 1: Выбор города и метро -->
-<div id="city-metro-modal" class="centered-modal">
-  <img src="https://via.placeholder.com/128x64" alt="Баннер" class="modal-banner">
-  <h2 style="font-size: 16px;">Выбери город</h2>
-  <select id="city-select">
-    <option value="moscow">Москва</option>
-    <option value="spb">Санкт-Петербург</option>
-  </select>
+<body style="margin:0; background:#000; color:white; font-family:sans-serif;">
+  <div id="city-metro-modal" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;
+      background:#1e1e1e;border-radius:10px;padding:20px;width:90%;max-width:400px;text-align:center;">
+    <img src="https://via.placeholder.com/128x64" alt="Баннер" style="width:128px;height:64px;object-fit:contain;margin-bottom:10px;">
+    <h2 style="font-size:16px;margin:10px 0;">Выбери город и станцию метро</h2>
 
-  <h2 style="font-size: 16px;">Выбери метро</h2>
-  <select id="metro-select"></select>
+    <select id="city-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;">
+      <option value="moscow">Москва</option>
+      <option value="spb">Санкт-Петербург</option>
+    </select>
 
-  <button id="confirm-btn">Подтвердить</button>
-</div>
+    <select id="metro-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;">
+      <!-- Станции загружаются скриптом -->
+    </select>
 
-<style>
-  .centered-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    background: rgba(0,0,0,0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    padding: 20px;
-    color: white;
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
-  }
-  .modal-banner {
-    width: 128px;
-    height: 64px;
-    object-fit: contain;
-    margin-bottom: 10px;
-  }
-  .centered-modal h2 {
-    font-size: 16px;
-    margin: 10px 0 5px;
-  }
-  .centered-modal select, .centered-modal button {
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    border: none;
-    background: #333;
-    color: white;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .centered-modal button:hover {
-    background: #444;
-  }
-</style>
+    <button id="confirm-btn" style="width:100%;padding:10px;margin-top:10px;border-radius:5px;border:none;background:#444;color:white;">
+      Подтвердить
+    </button>
+  </div>
 
-<script>
-  const citySelect = document.getElementById("city-select");
-  const metroSelect = document.getElementById("metro-select");
+  <script>
+    const citySelect = document.getElementById("city-select");
+    const metroSelect = document.getElementById("metro-select");
 
-  const metroStations = {
-    moscow: [
-      "Арбатская", "Бабушкинская", "Баррикадная", "ВДНХ", "Войковская"
-      // сюда позже вставим весь список
-    ],
-    spb: [
-      "Адмиралтейская", "Автово", "Балтийская", "Горьковская", "Маяковская"
-      // сюда позже вставим весь список
-    ]
-  };
+    const metroStations = {
+      moscow: [
+        "Авиамоторная","Автозаводская","Академическая","Александровский сад","Алексеевская",
+        "Алма-Атинская","Алтуфьево","Аннино","Арбатская","Аэропорт","Бабушкинская","Баррикадная",
+        "Бауманская","Беговая","Белорусская","Беломорская","Беляево","Бибирево","Библиотека им. Ленина",
+        "Боровицкая","Ботанический сад","Братиславская","Бульвар Дмитрия Донского","Бульвар Рокоссовского",
+        "Бунинская аллея","Варшавская","ВДНХ","Верхние Котлы","Владыкино","Водный стадион","Войковская",
+        "Волгоградский проспект","Волжская","Волоколамская","Воробьёвы горы","Выставочная","Выхино",
+        "Динамо","Дмитровская","Добрынинская","Домодедовская","Достоевская","Дубровка","Жулебино",
+        "Зябликово","Измайловская","Калужская","Кантемировская","Каховская","Каширская","Киевская",
+        "Китай-город","Кожуховская","Коломенская","Комсомольская","Коньково","Красногвардейская",
+        "Краснопресненская","Красносельская","Красные ворота","Крестьянская застава","Кропоткинская",
+        "Крылатское","Кузнецкий мост","Кузьминки","Кунцевская","Курская","Кутузовская","Ленинский проспект",
+        "Лубянка","Лужники","Лухмановская","Люблино","Марксистская","Марьина роща","Марьино","Маяковская",
+        "Медведково","Менделеевская","Митино","Молодёжная","Нагатинская","Нагорная","Нахимовский проспект",
+        "Новогиреево","Новокосино","Новокузнецкая","Новослободская","Новоясеневская","Октябрьская",
+        "Октябрьское поле","Орехово","Отрадное","Охотный ряд","Павелецкая","Парк культуры","Парк Победы",
+        "Партизанская","Первомайская","Перово","Петровско-Разумовская","Печатники","Пионерская","Планерная",
+        "Площадь Ильича","Площадь Революции","Полежаевская","Полянка","Пражская","Преображенская площадь",
+        "Пролетарская","Проспект Вернадского","Проспект Мира","Профсоюзная","Пушкинская","Речной вокзал",
+        "Рижская","Римская","Рязанский проспект","Савёловская","Свиблово","Севастопольская","Семёновская",
+        "Серпуховская","Славянский бульвар","Смоленская","Сокол","Сокольники","Спартак","Спортивная",
+        "Сретенский бульвар","Строгино","Студенческая","Сухаревская","Сходненская","Таганская","Тверская",
+        "Театральная","Текстильщики","Тимирязевская","Третьяковская","Тропарёво","Тульская","Тургеневская",
+        "Тушинская","Улица 1905 года","Улица Академика Янгеля","Улица Горчакова","Улица Скобелевская",
+        "Университет","Филёвский парк","Фили","Фонвизинская","Фрунзенская","Царицыно","Цветной бульвар",
+        "Черкизовская","Чертановская","Чеховская","Чистые пруды","Чкаловская","Шаболовская","Шелепиха",
+        "Щёлковская","Щукинская","Электрозаводская","Юго-Западная","Южная","Ясенево"
+      ],
+      spb: [
+        "Адмиралтейская","Автово","Балтийская","Бухарестская","Василеостровская","Владимирская","Волковская",
+        "Выборгская","Горьковская","Гражданский проспект","Девяткино","Достоевская","Дунайская","Елизаровская",
+        "Звёздная","Зенит","Комендантский проспект","Крестовский остров","Купчино","Ладожская","Ленинский проспект",
+        "Лесная","Лиговский проспект","Маяковская","Международная","Московская","Московские ворота",
+        "Нарвская","Невский проспект","Новочеркасская","Обводный канал","Озерки","Парк Победы","Парнас",
+        "Петроградская","Пионерская","Площадь Александра Невского","Площадь Восстания","Площадь Ленина",
+        "Политехническая","Приморская","Проспект Большевиков","Проспект Ветеранов","Проспект Просвещения",
+        "Пушкинская","Рыбацкое","Садовая","Сенная площадь","Спасская","Спортивная","Технологический институт",
+        "Удельная","Фрунзенская","Чёрная речка","Чкаловская","Электросила"
+      ]
+    };
 
-  function updateMetroOptions(city) {
-    metroSelect.innerHTML = "";
-    metroStations[city].forEach(station => {
-      const option = document.createElement("option");
-      option.value = station;
-      option.textContent = station;
-      metroSelect.appendChild(option);
+    function updateMetroOptions(city) {
+      metroSelect.innerHTML = "";
+      metroStations[city].forEach(station => {
+        const option = document.createElement("option");
+        option.value = station;
+        option.textContent = station;
+        metroSelect.appendChild(option);
+      });
+    }
+
+    citySelect.addEventListener("change", () => {
+      updateMetroOptions(citySelect.value);
     });
-  }
 
-  citySelect.addEventListener("change", () => {
-    updateMetroOptions(citySelect.value);
-  });
+    document.addEventListener("DOMContentLoaded", () => {
+      updateMetroOptions(citySelect.value);
+    });
 
-  document.addEventListener("DOMContentLoaded", () => {
-    updateMetroOptions(citySelect.value); // первичная загрузка
-  });
-
-  document.getElementById("confirm-btn").addEventListener("click", () => {
-    const selectedCity = citySelect.value;
-    const selectedMetro = metroSelect.value;
-    console.log("Выбран город:", selectedCity);
-    console.log("Выбрана станция метро:", selectedMetro);
-    // Здесь ты можешь вызвать следующий шаг (лоадбар и т.д.)
-  });
-</script>
+    document.getElementById("confirm-btn").addEventListener("click", () => {
+      const selectedCity = citySelect.value;
+      const selectedMetro = metroSelect.value;
+      alert(`Вы выбрали: ${selectedCity}, станция ${selectedMetro}`);
+      // Здесь будет вызов следующего шага
+    });
+  </script>
+</body>
