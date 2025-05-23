@@ -1,183 +1,228 @@
 <!-- Блок выбора города и метро -->
 
-  <div id="city-metro-modal" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;
-      background:#1e1e1e;border-radius:10px;padding:20px;width:90%;max-width:400px;text-align:center;">
-    <img src="https://via.placeholder.com/128x64" alt="Баннер" style="width:128px;height:64px;object-fit:contain;margin-bottom:10px;">
-    <h2 style="font-size:16px;margin:10px 0;">Выбери город и станцию метро</h2>
+<div id="city-metro-modal" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;
+    background:#1e1e1e;border-radius:10px;padding:20px;width:90%;max-width:400px;text-align:center;">
+  <img src="https://via.placeholder.com/128x64" alt="Баннер" style="width:128px;height:64px;object-fit:contain;margin-bottom:10px;">
+  <h2 style="font-size:16px;margin:10px 0;">Выбери город и станцию метро</h2>
 
 
-    <select id="city-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;">
-      <option value="moscow">Москва</option>
-      <option value="spb">Санкт-Петербург</option>
-    </select>
-    
-    <select id="metro-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;"></select>
-    
-    <button id="confirm-btn" style="width:100%;padding:10px;margin-top:10px;border-radius:5px;border:none;background:#444;color:white;">
-      Подтвердить
-    </button>
+  <select id="city-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;">
+    <option value="moscow">Москва</option>
+    <option value="spb">Санкт-Петербург</option>
+  </select>
 
+
+  <select id="metro-select" style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;background:#333;color:white;"></select>
+
+  <button id="confirm-btn" style="width:100%;padding:10px;margin-top:10px;border-radius:5px;border:none;background:#444;color:white;">
+    Подтвердить
+  </button>
+</div>
+
+<!-- Лоадбар после выбора города/метро -->
+
+<div id="loader" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  z-index:1000; background:#1e1e1e; border-radius:10px; padding:20px; width:90%; max-width:400px; text-align:center;">
+  <p id="loader-text" style="color:white; font-size:16px; margin-bottom:10px;">Загрузка витрины...</p>
+  <div style="width:100%;background:#333;border-radius:5px;overflow:hidden;height:10px;">
+    <div id="progress-bar" style="width:0;height:100%;background:white;"></div>
   </div>
+</div>
 
-  <!-- Лоадбар после выбора города/метро -->
 
-  <div id="loader" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-    z-index:1000; background:#1e1e1e; border-radius:10px; padding:20px; width:90%; max-width:400px; text-align:center;">
-    <p id="loader-text" style="color:white; font-size:16px; margin-bottom:10px;">Загрузка витрины...</p>
-    <div style="width:100%;background:#333;border-radius:5px;overflow:hidden;height:10px;">
-      <div id="progress-bar" style="width:0;height:100%;background:white;"></div>
-    </div>
+<!-- Витрина товаров -->
+
+<div id="storefront" style="display:none; padding:20px;">
+  <h2 id="store-title" style="text-align:center;">Витрина товаров</h2>
+  <div id="product-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px;margin-top:20px;"></div>
+</div>
+
+<!-- Лоадбар после покупки -->
+
+<div id="order-loader" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  z-index:1000; background:#1e1e1e; border-radius:10px; padding:20px; width:90%; max-width:400px; text-align:center;">
+  <p id="order-loader-text" style="color:white; font-size:16px; margin-bottom:10px;">Загрузка данных по заказу...</p>
+  <div style="width:100%;background:#333;border-radius:5px;overflow:hidden;height:10px;">
+    <div id="order-progress-bar" style="width:0;height:100%;background:white;"></div>
   </div>
+</div>
 
 
-  <!-- Витрина товаров -->
+<!-- Окно оплаты -->
 
-  <div id="storefront" style="display:none; padding:20px;">
-    <h2 id="store-title" style="text-align:center;">Витрина товаров</h2>
-    <div id="product-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px;margin-top:20px;"></div>
-  </div>
-
-
-  <!-- Лоадбар после покупки -->
-
-  <div id="order-loader" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-    z-index:1000; background:#1e1e1e; border-radius:10px; padding:20px; width:90%; max-width:400px; text-align:center;">
-    <p id="order-loader-text" style="color:white; font-size:16px; margin-bottom:10px;">Загрузка данных по заказу...</p>
-    <div style="width:100%;background:#333;border-radius:5px;overflow:hidden;height:10px;">
-      <div id="order-progress-bar" style="width:0;height:100%;background:white;"></div>
-    </div>
-  </div>
+<div id="payment-window" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:#1e1e1e;padding:20px;border-radius:10px;max-width:400px;width:90%;z-index:1000;text-align:left;">
+  <h3>Оплата заказа</h3>
+  <p id="payment-info"></p>
+  <p id="payment-timer">Осталось времени: 15:00</p>
+  <button id="check-payment-btn">Проверить оплату</button>
+  <p id="checking-status" style="display:none;margin-top:10px;"></p>
+  <button id="restart-btn" style="margin-top:10px;">Создать заказ заново</button>
+</div>
 
 
-  <script>
-    const citySelect = document.getElementById("city-select");
-    const metroSelect = document.getElementById("metro-select");
-    const modal = document.getElementById("city-metro-modal");
-    const loader = document.getElementById("loader");
-    const loaderText = document.getElementById("loader-text");
-    const progressBar = document.getElementById("progress-bar");
-    const storefront = document.getElementById("storefront");
-    const productGrid = document.getElementById("product-grid");
-    const storeTitle = document.getElementById("store-title");
+<script>
+  const citySelect = document.getElementById("city-select");
+  const metroSelect = document.getElementById("metro-select");
+  const modal = document.getElementById("city-metro-modal");
+  const loader = document.getElementById("loader");
+  const loaderText = document.getElementById("loader-text");
+  const progressBar = document.getElementById("progress-bar");
+  const storefront = document.getElementById("storefront");
+  const productGrid = document.getElementById("product-grid");
+  const storeTitle = document.getElementById("store-title");
+  const orderLoader = document.getElementById("order-loader");
+  const orderText = document.getElementById("order-loader-text");
+  const orderProgress = document.getElementById("order-progress-bar");
+  const paymentWindow = document.getElementById("payment-window");
+  const paymentInfo = document.getElementById("payment-info");
+  const paymentTimer = document.getElementById("payment-timer");
+  const checkPaymentBtn = document.getElementById("check-payment-btn");
+  const checkingStatus = document.getElementById("checking-status");
+  const restartBtn = document.getElementById("restart-btn");
 
 
-    const products = [
-      "Красный кубик", "Синий шар", "Жёлтый треугольник", "Зелёный цилиндр",
-      "Оранжевая пирамида", "Сиреневая звезда", "Белый конус", "Чёрный куб",
-      "Прозрачный шар", "Неоновый прямоугольник"
-    ];
-    
-    const metroStations = {
-      moscow: ["Охотный ряд", "Тверская", "Арбатская"],
-      spb: ["Гостиный двор", "Маяковская", "Сенная площадь"]
-    };
-    
-    function updateMetroOptions(city) {
-      metroSelect.innerHTML = "";
-      metroStations[city].forEach(station => {
-        const option = document.createElement("option");
-        option.value = station;
-        option.textContent = station;
-        metroSelect.appendChild(option);
+  const products = ["Красный кубик", "Синий шар", "Жёлтый треугольник", "Зелёный цилиндр",
+    "Оранжевая пирамида", "Сиреневая звезда", "Белый конус", "Чёрный куб",
+    "Прозрачный шар", "Неоновый прямоугольник"];
+
+  const metroStations = {
+    moscow: ["Охотный ряд", "Тверская", "Арбатская"],
+    spb: ["Гостиный двор", "Маяковская", "Сенная площадь"]
+  };
+
+  let savedOrderId = null;
+  let selectedProduct = null;
+  let selectedQuantity = 1;
+  let selectedDelivery = null;
+  let selectedMetro = "";
+
+  function updateMetroOptions(city) {
+    metroSelect.innerHTML = "";
+    metroStations[city].forEach(station => {
+      const option = document.createElement("option");
+      option.value = station;
+      option.textContent = station;
+      metroSelect.appendChild(option);
+    });
+  }
+
+  citySelect.addEventListener("change", () => updateMetroOptions(citySelect.value));
+  document.addEventListener("DOMContentLoaded", () => updateMetroOptions(citySelect.value));
+
+  document.getElementById("confirm-btn").addEventListener("click", () => {
+    selectedMetro = metroSelect.value;
+    modal.style.display = "none";
+    loaderText.textContent = `Загрузка витрины для станции метро ${selectedMetro}`;
+    loader.style.display = "block";
+    let progress = 0;
+    const duration = 3000 + Math.random() * 7000;
+    const start = Date.now();
+    function animateLoader() {
+      progress = (Date.now() - start) / duration * 100;
+      progressBar.style.width = Math.min(progress, 100) + "%";
+      if (progress < 100) {
+        requestAnimationFrame(animateLoader);
+      } else {
+        loader.style.display = "none";
+        storeTitle.textContent = `Витрина товаров для станции метро ${selectedMetro}`;
+        renderProducts();
+        storefront.style.display = "block";
+      }
+    }
+    animateLoader();
+  });
+
+  function renderProducts() {
+    productGrid.innerHTML = "";
+    for (let i = 0; i < 10; i++) {
+      const card = document.createElement("div");
+      card.style.background = "#1e1e1e";
+      card.style.borderRadius = "10px";
+      card.style.padding = "10px";
+      card.innerHTML = `
+        <img src="https://via.placeholder.com/150" style="width:100%;border-radius:10px;object-fit:cover;margin-bottom:10px;" />
+        <h3 style="margin:0 0 5px 0; font-size:14px;">${products[i]}</h3>
+        <p style="margin:0 0 5px 0;">Цена: ${(1000 + i * 100)}₽</p>
+        <select class="qty-select" style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
+          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+        </select>
+        <select class="delivery-select" style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
+          <option>Адресная доставка</option><option>Самовывоз</option><option>Почта</option>
+        </select>
+        <button class="buy-btn" style="width:100%;padding:8px;border:none;border-radius:5px;background:#444;color:white;" data-product="${products[i]}" data-price="${1000 + i * 100}">Купить</button>
+      `;
+      productGrid.appendChild(card);
+    }
+  }
+
+  function showOrderLoader(callback) {
+    if (!savedOrderId) savedOrderId = Math.floor(100000 + Math.random() * 900000);
+    orderText.textContent = `Загрузка данных по заказу #${savedOrderId}`;
+    orderLoader.style.display = "block";
+    orderProgress.style.width = "0%";
+    const duration = 2000 + Math.random() * 4000;
+    const start = Date.now();
+    function updateProgress() {
+      const percent = Math.min((Date.now() - start) / duration * 100, 100);
+      orderProgress.style.width = `${percent}%`;
+      if (percent < 100) requestAnimationFrame(updateProgress);
+      else {
+        orderLoader.style.display = "none";
+        callback();
+      }
+    }
+    requestAnimationFrame(updateProgress);
+  }
+
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("buy-btn")) {
+      const card = e.target.closest("div");
+      selectedProduct = e.target.dataset.product;
+      selectedQuantity = parseInt(card.querySelector(".qty-select").value);
+      selectedDelivery = card.querySelector(".delivery-select").value;
+      const price = parseInt(e.target.dataset.price) * selectedQuantity;
+
+      showOrderLoader(() => {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString();
+        const dateStr = now.toLocaleDateString();
+        paymentInfo.innerHTML = `Дата: ${dateStr}<br>Время: ${timeStr}<br>ID заказа: ${savedOrderId}<br>
+          Позиция: ${selectedProduct}<br>Метро: ${selectedMetro}<br>Метод доставки: ${selectedDelivery}<br>
+          Кол-во: ${selectedQuantity}<br>Сумма: ${price}₽<br>Карта: 1234 5678 9012 3456`;
+        storefront.classList.add("blurred");
+        paymentWindow.style.display = "block";
+        startTimer();
       });
     }
-    
-    citySelect.addEventListener("change", () => {
-      updateMetroOptions(citySelect.value);
-    });
-    
-    document.addEventListener("DOMContentLoaded", () => {
-      updateMetroOptions(citySelect.value);
-    });
-    
-    document.getElementById("confirm-btn").addEventListener("click", () => {
-      const selectedMetro = metroSelect.value;
-      modal.style.display = "none";
-      loaderText.textContent = `Загрузка витрины для станции метро ${selectedMetro}`;
-      loader.style.display = "block";
-      let progress = 0;
-      const duration = 3000 + Math.random() * 7000;
-      const start = Date.now();
-    
-      function animateLoader() {
-        progress = (Date.now() - start) / duration * 100;
-        progressBar.style.width = Math.min(progress, 100) + "%";
-        if (progress < 100) {
-          requestAnimationFrame(animateLoader);
-        } else {
-          loader.style.display = "none";
-          storeTitle.textContent = `Витрина товаров для станции метро ${selectedMetro}`;
-          renderProducts();
-          storefront.style.display = "block";
-        }
-      }
-      animateLoader();
-    });
-    
-    function renderProducts() {
-      productGrid.innerHTML = "";
-      for (let i = 0; i < 10; i++) {
-        const card = document.createElement("div");
-        card.style.background = "#1e1e1e";
-        card.style.borderRadius = "10px";
-        card.style.padding = "10px";
-        card.innerHTML = `
-          <img src="https://via.placeholder.com/150" style="width:100%;border-radius:10px;object-fit:cover;margin-bottom:10px;" />
-          <h3 style="margin:0 0 5px 0; font-size:14px;">${products[i]}</h3>
-          <p style="margin:0 0 5px 0;">Цена: ${(1000 + i * 100)}₽</p>
-          <select style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
-            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-          </select>
-          <select style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
-            <option>Адресная доставка</option><option>Самовывоз</option><option>Почта</option>
-          </select>
-          <button class="buy-btn" style="width:100%;padding:8px;border:none;border-radius:5px;background:#444;color:white;">Купить</button>
-        `;
-        productGrid.appendChild(card);
-      }
-    }
-    
-    // Лоадбар после покупки
-    let savedOrderId = null;
-    
-    function showOrderLoader() {
-      if (!savedOrderId) {
-        savedOrderId = Math.floor(100000 + Math.random() * 900000);
-      }
-      const orderLoader = document.getElementById("order-loader");
-      const orderText = document.getElementById("order-loader-text");
-      const orderProgress = document.getElementById("order-progress-bar");
-    
-      orderText.textContent = `Загрузка данных по заказу #${savedOrderId}`;
-      orderLoader.style.display = "block";
-      orderProgress.style.width = "0%";
-    
-      const duration = 3000 + Math.random() * 7000;
-      const start = Date.now();
-    
-      function updateProgress() {
-        const elapsed = Date.now() - start;
-        const percent = Math.min((elapsed / duration) * 100, 100);
-        orderProgress.style.width = `${percent}%`;
-    
-        if (percent < 100) {
-          requestAnimationFrame(updateProgress);
-        } else {
-          // Действия после загрузки заказа
-        }
-      }
-    
-      requestAnimationFrame(updateProgress);
-    }
-    
-    document.addEventListener("DOMContentLoaded", () => {
-      document.addEventListener("click", (e) => {
-        if (e.target.classList.contains("buy-btn")) {
-          showOrderLoader();
-        }
-      });
-    });
 
-  </script>
+  });
+
+  let remainingSeconds = 900;
+  function startTimer() {
+    const interval = setInterval(() => {
+      if (remainingSeconds <= 0) clearInterval(interval);
+      const min = Math.floor(remainingSeconds / 60);
+      const sec = remainingSeconds % 60;
+      paymentTimer.textContent = `Осталось времени: ${min}:${sec.toString().padStart(2, '0')}`;
+      remainingSeconds--;
+    }, 1000);
+  }
+
+  checkPaymentBtn.addEventListener("click", () => {
+    checkingStatus.style.display = "block";
+    checkingStatus.textContent = `Проверка статуса оплаты по заказу #${savedOrderId}...`;
+    const wait = 2000 + Math.random() * 4000;
+    setTimeout(() => {
+      const now = new Date().toLocaleTimeString();
+      checkingStatus.innerHTML = `Оплата на сумму ${parseInt(selectedQuantity) * 1000}₽ по реквизитам 1234 5678 9012 3456 не обнаружена.<br>Убедитесь, что платёж проведён банком или отправьте боту чек об оплате.<br>Последнее обновление: ${now}`;
+    }, wait);
+  });
+
+  restartBtn.addEventListener("click", () => {
+    window.location.reload();
+  });
+</script>
+
 </body>
 </html>
