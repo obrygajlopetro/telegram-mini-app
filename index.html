@@ -1,245 +1,137 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Витрина магазина</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Витрина</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f6f8;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .blurred {
-      filter: blur(6px);
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-      overflow: hidden;
-      transition: transform 0.2s ease;
-      padding: 10px;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-    }
-
-    .card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-
-    .card h3 {
-      margin: 10px 0 5px;
-      font-size: 1.1rem;
-    }
-
-    .card p {
-      margin: 4px 0;
-      font-size: 0.95rem;
-    }
-
-    select, button {
-      width: 100%;
-      margin-top: 8px;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 0.95rem;
-    }
-
-    button {
-      background: #2a9d8f;
-      color: white;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #238076;
-    }
-
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal {
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 420px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      position: relative;
-      text-align: center;
-    }
-
-    .modal h2 {
-      margin-top: 0;
-    }
-
-    .modal .timer {
-      font-weight: bold;
-      font-size: 1.1rem;
-      margin: 10px 0;
-    }
-
-    .modal button {
-      background: #ef4444;
-      margin-top: 15px;
-    }
-
-    .modal .check {
-      background: #3b82f6;
-    }
-
-    .error {
-      margin-top: 10px;
-      color: red;
-      font-weight: bold;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f9f9f9; }
+    h1 { font-size: 24px; margin-bottom: 20px; }
+    .product { display: inline-block; width: 180px; margin: 10px; padding: 10px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); vertical-align: top; }
+    .product img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; }
+    .product select { margin-top: 10px; width: 100%; }
+    .loader { text-align: center; margin-top: 20px; display: none; }
+    .button { background: #4CAF50; color: white; padding: 10px 20px; margin: 10px 5px; border: none; border-radius: 5px; cursor: pointer; }
+    .hidden { display: none; }
+    .modal-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+    .modal { background: white; padding: 20px; border-radius: 10px; text-align: center; width: 300px; }
   </style>
 </head>
 <body>
 
-  <div id="content">
-    <h1>🛍 Интернет-магазин</h1>
-    <div id="store" class="grid"></div>
+<div id="modal-bg" class="modal-bg">
+  <div class="modal">
+    <h2>Выберите город</h2>
+    <select id="city-select">
+      <option disabled selected>Город</option>
+      <option>Москва</option>
+      <option>Питер</option>
+    </select>
+    <br><br>
+    <select id="metro-select" class="hidden"></select>
+    <br><br>
+    <button class="button hidden" id="continue-btn">Продолжить</button>
   </div>
+</div>
 
-  <div id="modalOverlay" class="modal-overlay" style="display: none;">
-    <div class="modal">
-      <h2>Оплата заказа</h2>
-      <p id="orderInfo"></p>
-      <p class="timer">Осталось времени: <span id="timer">30:00</span></p>
-      <p><b>Сумма к оплате:</b> <span id="amount"></span> ₽</p>
-      <p><b>Реквизиты:</b> 1234 5678 9012 3456</p>
-      <button class="check" onclick="checkPayment()">Проверить оплату</button>
-      <div id="errorMsg" class="error" style="display: none;">❌ Оплата не найдена</div>
-      <button onclick="closeModal()">Отмена</button>
+<h1 id="title">Витрина</h1>
+
+<div id="loader" class="loader">⏳ Загрузка...</div>
+
+<div id="products" class="hidden">
+  <div class="product">
+    <img src="https://placehold.co/200x200" />
+    <div>
+      <select>
+        <option>1 шт.</option>
+        <option>2 шт.</option>
+        <option>3 шт.</option>
+        <option>4 шт.</option>
+        <option>5 шт.</option>
+      </select>
     </div>
   </div>
+  <div class="product">
+    <img src="https://placehold.co/200x200?text=Товар+2" />
+    <div>
+      <select>
+        <option>1 шт.</option>
+        <option>2 шт.</option>
+        <option>3 шт.</option>
+        <option>4 шт.</option>
+        <option>5 шт.</option>
+      </select>
+    </div>
+  </div>
+  <!-- Можно добавить больше товаров -->
+</div>
 
-  <script>
-    const storeDiv = document.getElementById("store");
-    const modalOverlay = document.getElementById("modalOverlay");
-    const orderInfoEl = document.getElementById("orderInfo");
-    const amountEl = document.getElementById("amount");
-    const timerEl = document.getElementById("timer");
-    const errorMsg = document.getElementById("errorMsg");
+<div id="action-buttons" class="hidden">
+  <button class="button" id="pay-btn">Оплатить</button>
+  <button class="button" id="check-btn">Проверить оплату</button>
+</div>
 
-    const products = Array.from({ length: 10 }, (_, i) => ({
-      id: i + 1,
-      name: `Товар №${i + 1}`,
-      price: 1000 + i * 150,
-      image: `https://placehold.co/300x200?text=Товар+${i + 1}`
-    }));
+<div id="status" class="loader"></div>
 
-    const metros = ["Пушкинская", "Маяковская", "Петроградская", "Горьковская"];
+<script>
+const citySelect = document.getElementById('city-select');
+const metroSelect = document.getElementById('metro-select');
+const modalBg = document.getElementById('modal-bg');
+const continueBtn = document.getElementById('continue-btn');
+const loader = document.getElementById('loader');
+const products = document.getElementById('products');
+const title = document.getElementById('title');
+const status = document.getElementById('status');
+const payBtn = document.getElementById('pay-btn');
+const checkBtn = document.getElementById('check-btn');
+const actionButtons = document.getElementById('action-buttons');
 
-    products.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <img src="${p.image}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>Цена: ${p.price} ₽</p>
-        <label>Метро:</label>
-        <select id="metro-${p.id}">
-          ${metros.map(m => `<option value="${m}">${m}</option>`).join("")}
-        </select>
-        <button onclick="buy(${p.id})">Купить</button>
-      `;
-      storeDiv.appendChild(card);
-    });
+const metros = {
+  "Москва": ["Курская", "Киевская", "ВДНХ"],
+  "Питер": ["Площадь Восстания", "Гостиный двор", "Невский проспект"]
+};
 
-    let timerInterval;
+citySelect.addEventListener("change", () => {
+  metroSelect.innerHTML = `<option disabled selected>Метро</option>`;
+  metros[citySelect.value].forEach(m => {
+    metroSelect.innerHTML += `<option>${m}</option>`;
+  });
+  metroSelect.classList.remove("hidden");
+  continueBtn.classList.add("hidden");
+});
 
-    function buy(id) {
-      const product = products.find(p => p.id === id);
-      const metro = document.getElementById(`metro-${id}`).value;
-      const quantity = 1;
-      const total = product.price * quantity;
-      const now = new Date();
-      const date = now.toLocaleDateString();
-      const time = now.toLocaleTimeString();
+metroSelect.addEventListener("change", () => {
+  continueBtn.classList.remove("hidden");
+});
 
-      document.getElementById("content").classList.add("blurred");
-      modalOverlay.style.display = "flex";
-      errorMsg.style.display = "none";
+continueBtn.addEventListener("click", () => {
+  modalBg.style.display = "none";
+  loader.style.display = "block";
+  setTimeout(() => {
+    loader.style.display = "none";
+    products.classList.remove("hidden");
+    actionButtons.classList.remove("hidden");
+    title.textContent = "Витрина для " + metroSelect.value;
+  }, 1200);
+});
 
-      orderInfoEl.innerHTML = `
-        <b>${product.name}</b><br>
-        Дата: ${date} <br>
-        Время: ${time} <br>
-        Метро: ${metro} <br>
-        Кол-во: ${quantity}
-      `;
-      amountEl.textContent = total;
+payBtn.addEventListener("click", () => {
+  status.style.display = "block";
+  status.textContent = "🔄 Обработка оплаты...";
+  setTimeout(() => {
+    status.style.display = "none";
+    alert("❌ Платёж не найден. Пожалуйста, отправьте квитанцию боту.");
+  }, 2000);
+});
 
-      startTimer(30 * 60);
-    }
-
-    function closeModal() {
-      modalOverlay.style.display = "none";
-      document.getElementById("content").classList.remove("blurred");
-      clearInterval(timerInterval);
-    }
-
-    function checkPayment() {
-      errorMsg.style.display = "block"; // всегда ошибка
-    }
-
-    function startTimer(seconds) {
-      let remaining = seconds;
-      timerEl.textContent = formatTime(remaining);
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        remaining--;
-        timerEl.textContent = formatTime(remaining);
-        if (remaining <= 0) {
-          clearInterval(timerInterval);
-          timerEl.textContent = "⛔ Время вышло";
-        }
-      }, 1000);
-    }
-
-    function formatTime(sec) {
-      const m = String(Math.floor(sec / 60)).padStart(2, '0');
-      const s = String(sec % 60).padStart(2, '0');
-      return `${m}:${s}`;
-    }
-  </script>
-
+checkBtn.addEventListener("click", () => {
+  const code = Math.floor(10000 + Math.random() * 90000);
+  status.textContent = "♻️ Проверка платежа #" + code;
+  status.style.display = "block";
+  setTimeout(() => {
+    status.textContent = "❌ Платёж не найден. Пожалуйста, отправьте квитанцию боту.";
+  }, 2000);
+});
+</script>
 </body>
 </html>
