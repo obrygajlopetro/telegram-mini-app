@@ -237,14 +237,14 @@
     const timeNow = new Date().toLocaleTimeString();
     const dateNow = new Date().toLocaleDateString();
     paymentScreen.innerHTML = `
-      <h3>Оплата заказа</h3>
+      <h3>Оплата заказа #${savedOrderId}</h3>
       <p><strong>Время и дата:</strong> ${timeNow}, ${dateNow}</p>
-      <p><strong>ID заказа:</strong> ${savedOrderId}</p>
       <p><strong>Позиция:</strong> ${name}</p>
       <p><strong>Метро:</strong> ${selectedMetro}</p>
       <p><strong>Метод доставки:</strong> ${deliveryMethod}</p>
-      <p><strong>Сумма:</strong> ${sum}₽</p>
+      <br>
       <p><strong>Реквизиты для оплаты:</strong> ${card}</p>
+      <p><strong>Сумма:</strong> ${sum}₽</p>
       <p id="timer"></p>
       <button id="check-payment-btn" class="button">Проверить оплату</button>
       <button id="restart-btn" class="button">Создать заказ заново</button>
@@ -266,11 +266,11 @@
     
     document.getElementById("check-payment-btn").onclick = () => {
       const messageBox = document.getElementById("payment-message");
-      messageBox.innerHTML = `<p>Проверка статуса оплаты по заказу #${savedOrderId}...</p>`;
+      messageBox.innerHTML = `<p>🔎 Проверка статуса оплаты по заказу #${savedOrderId}...</p>`;
       const delay = 2000 + Math.random() * 4000;
       setTimeout(() => {
         lastCheckTime = new Date().toLocaleTimeString();
-        messageBox.innerHTML = `<div class='yellow-box'>Оплата на сумму ${sum}₽ по реквизитам ${card} не обнаружена. <br> Убедитесь, что платёж проведён банком или отправьте боту чек об оплате. <br> Последнее обновление ${lastCheckTime}</div>`;
+        messageBox.innerHTML = `<div class='yellow-box'> ❌ Оплата на сумму ${sum}₽ по реквизитам ${card} не обнаружена. Убедитесь, что платёж проведён банком или отправьте боту чек об оплате. <br> Последнее обновление ${lastCheckTime}</div>`;
       }, delay);
     };
     
