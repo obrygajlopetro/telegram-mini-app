@@ -59,10 +59,10 @@
       height: 100%;
       background: white;
     }
-   .blurred > *:not(#order-loader) {
-  filter: blur(6px);
-  pointer-events: none;
-  user-select: none;
+    .blurred {
+      filter: blur(6px);
+      pointer-events: none;
+      user-select: none;
     }
     .yellow-box {
       background: #332f00;
@@ -230,20 +230,20 @@
     requestAnimationFrame(updateProgress);
   }
 
- function showPaymentScreen(name, price, qty, deliveryMethod) {
+  function showPaymentScreen(name, price, qty, deliveryMethod) {
     const sum = price * qty;
     const card = "1234 5678 9012 3456";
     const timeNow = new Date().toLocaleTimeString();
     const dateNow = new Date().toLocaleDateString();
     paymentScreen.innerHTML = `
-      <h3>♻️ Оплата заказа #${savedOrderId}</h3>
-      <p>⌞Время и дата: ${timeNow}, ${dateNow}</p>
-      <p>⌞Позиция: ${name}</p>
-      <p>⌞Метро: ${selectedMetro}</p>
-      <p>⌞Метод доставки: ${deliveryMethod}</p>
-      <br>
-      <p><strong>💳 Реквизиты для оплаты:</strong> ${card}</p>
-      <p><strong>💵 Сумма:</strong> ${sum}₽</p>
+      <h3>Оплата заказа</h3>
+      <p><strong>Время и дата:</strong> ${timeNow}, ${dateNow}</p>
+      <p><strong>ID заказа:</strong> ${savedOrderId}</p>
+      <p><strong>Позиция:</strong> ${name}</p>
+      <p><strong>Метро:</strong> ${selectedMetro}</p>
+      <p><strong>Метод доставки:</strong> ${deliveryMethod}</p>
+      <p><strong>Сумма:</strong> ${sum}₽</p>
+      <p><strong>Реквизиты для оплаты:</strong> ${card}</p>
       <p id="timer"></p>
       <button id="check-payment-btn" class="button">Проверить оплату</button>
       <button id="restart-btn" class="button">Создать заказ заново</button>
@@ -252,28 +252,24 @@
     storefront.style.display = "none";
     paymentScreen.style.display = "block";
 
-   const timer = document.getElementById("timer");
-let remaining = 15 * 60;
-const timerBox = document.createElement("div");
-timerBox.className = "blue-box";
-timer.appendChild(timerBox);
-
-setInterval(() => {
-  if (remaining > 0) {
-    const min = Math.floor(remaining / 60);
-    const sec = remaining % 60;
-    timerBox.textContent = `До истечения времени оплаты: ${min}:${sec.toString().padStart(2, '0')}`;
-    remaining--;
-  }
-}, 1000);
+    const timer = document.getElementById("timer");
+    let remaining = 15 * 60;
+    setInterval(() => {
+      if (remaining > 0) {
+        const min = Math.floor(remaining / 60);
+        const sec = remaining % 60;
+        timer.textContent = `До истечения времени оплаты: ${min}:${sec.toString().padStart(2, '0')}`;
+        remaining--;
+      }
+    }, 1000);
     
     document.getElementById("check-payment-btn").onclick = () => {
       const messageBox = document.getElementById("payment-message");
-      messageBox.innerHTML = `<p>🔎 Проверка статуса оплаты по заказу #${savedOrderId}...</p>`;
+      messageBox.innerHTML = `<p>Проверка статуса оплаты по заказу #${savedOrderId}...</p>`;
       const delay = 2000 + Math.random() * 4000;
       setTimeout(() => {
         lastCheckTime = new Date().toLocaleTimeString();
-        yellow-box.innerHTML = `<div class='yellow-box'> ❌ Оплата на сумму ${sum}₽ по реквизитам ${card} не обнаружена. Убедитесь, что платёж проведён банком или отправьте боту чек об оплате. <br> Последнее обновление ${lastCheckTime}</div>`;
+        messageBox.innerHTML = `<div class='yellow-box'>Оплата на сумму ${sum}₽ по реквизитам ${card} не обнаружена. Убедитесь, что платёж проведён банком или отправьте боту чек об оплате. Последнее обновление ${lastCheckTime}</div>`;
       }, delay);
     };
     
