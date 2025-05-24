@@ -232,9 +232,21 @@
         requestAnimationFrame(animateLoader);
       } else {
         loader.style.display = "none";
-        storeTitle.textContent = `📦 Витрина товаров для станции метро ${selectedMetro} (и соседних с ней)<div class="yellow-box" role="alert">
-  ⚠️ Это важное сообщение. Всё будет работать, если блок вставлен в допустимое место HTML-структуры.
-</div>` 
+        storeTitle.innerHTML = `
+  📦 Витрина товаров для станции метро ${selectedMetro} (и соседних с ней)
+  <div class="yellow-box" style="
+    background-color: #fff8dc;
+    border: 1px solid #facc15;
+    color: #78350f;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  ">
+    ⚠️ Убедитесь, что вы выбрали правильный город перед покупкой.
+  </div>
+`; 
         renderProducts();
         storefront.style.display = "block";
       }
