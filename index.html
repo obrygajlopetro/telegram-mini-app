@@ -240,7 +240,25 @@
     animateLoader();
   });
 
-  const prices = [3200, 3400, 3700, 3550, 3100, 3800, 3250, 3600, 3300, 3750];
+  const priceRanges = [
+  [3000, 3300], // Красный кубик
+  [3100, 3500], // Синий шар
+  [3200, 3700], // Жёлтый треугольник
+  [3100, 3400], // Зелёный цилиндр
+  [3000, 3600], // Оранжевая пирамида
+  [3300, 3800], // Сиреневая звезда
+  [3100, 3550], // Белый конус
+  [3400, 3700], // Чёрный куб
+  [3050, 3350], // Прозрачный шар
+  [3000, 3500]  // Неоновый прямоугольник
+];
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const prices = priceRanges.map(([min, max]) => getRandomInt(min, max));
+
   function renderProducts() {
   productGrid.innerHTML = "";
   for (let i = 0; i < 10; i++) {
