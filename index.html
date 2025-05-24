@@ -232,7 +232,7 @@
         requestAnimationFrame(animateLoader);
       } else {
         loader.style.display = "none";
-        storeTitle.textContent = `Витрина товаров для станции метро ${selectedMetro}`;
+        storeTitle.textContent = `Витрина товаров для станции метро ${selectedMetro} и соседних с ней`;
         renderProducts();
         storefront.style.display = "block";
       }
@@ -341,7 +341,7 @@ setInterval(() => {
   if (remaining > 0) {
     const min = Math.floor(remaining / 60);
     const sec = remaining % 60;
-    timerBox.textContent = `До истечения времени оплаты: ${min}:${sec.toString().padStart(2, '0')}`;
+    timerBox.textContent = `⏱️ Время на оплату заказа #${savedOrderId}: ${min}:${sec.toString().padStart(2, '0')}`;
     remaining--;
   }
 }, 1000);
