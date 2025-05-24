@@ -317,7 +317,7 @@
       if (remaining > 0) {
         const min = Math.floor(remaining / 60);
         const sec = remaining % 60;
-        blue-box.textContent = `До истечения времени оплаты: ${min}:${sec.toString().padStart(2, '0')}`;
+        timer.textContent = `До истечения времени оплаты: ${min}:${sec.toString().padStart(2, '0')}`;
         remaining--;
       }
     }, 1000);
