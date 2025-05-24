@@ -241,16 +241,16 @@
   });
 
   const priceRanges = [
-  [3000, 3300], // Красный кубик
-  [3100, 3500], // Синий шар
-  [3200, 3700], // Жёлтый треугольник
-  [3100, 3400], // Зелёный цилиндр
-  [3000, 3600], // Оранжевая пирамида
-  [3300, 3800], // Сиреневая звезда
-  [3100, 3550], // Белый конус
-  [3400, 3700], // Чёрный куб
-  [3050, 3350], // Прозрачный шар
-  [3000, 3500]  // Неоновый прямоугольник
+  [3240, 3650], // Мефедрон (кристаллы)
+  [3110, 3510], // Мефедрон (мука)
+  [3000, 3450], // A-PVP (VHQ)
+  [2350, 2820], // Бутират GHB
+  [6400, 7200], // Кокаин (Боливия)
+  [2300, 2800], // Бошки White Widow
+  [2100, 2550], // Гашиш Ice-O-Lator
+  [3900, 4700], // MDMA (кристалл)
+  [4650, 5350], // Extasy MIX
+  [2200, 2800]  // Бошки T-34
 ];
 
 function getRandomInt(min, max) {
@@ -275,7 +275,7 @@ const prices = priceRanges.map(([min, max]) => getRandomInt(min, max));
         <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
       </select>
       <select class="delivery-method" style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
-        <option>Адресная доставка</option><option>Самовывоз</option><option>Почта</option>
+        <option>Тайник</option><option>Магнит</option><option>Доставка</option>
       </select>
       <button class="buy-btn button">Купить</button>
     `;
@@ -320,7 +320,7 @@ const prices = priceRanges.map(([min, max]) => getRandomInt(min, max));
       <p>⌞Позиция: ${name} (${deliveryMethod})</p>
       <p>⌞Метро: ${selectedMetro}</p>
       <br>
-      <p><strong>Реквизиты для оплаты:</strong> ${card}</p>
+      <p>💳 <strong>Реквизиты:</strong> ${card}</p>
       <p>⌞Сумма: ${sum}₽</p>
      
       <p id="timer"></p>
