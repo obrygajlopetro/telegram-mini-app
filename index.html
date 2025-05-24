@@ -250,7 +250,8 @@
       card.innerHTML = `
         <img src="https://i.ibb.co/jkD1fdjv/1x1.png" style="width:100%;border-radius:10px;object-fit:cover;margin-bottom:10px;" />
         <h3 style="margin:0 0 5px 0; font-size:14px;">${products[i]}</h3>
-        <p style="margin:0 0 5px 0;">Цена: ${(3200 + i * 10)}₽</p>
+        const price = Math.floor(Math.random() * (3800 - 3100 + 1)) + 3100;
+<p style="margin:0 0 5px 0;">Цена: ${price}₽</p>
         <select class="qty-select" style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
           <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
         </select>
