@@ -240,28 +240,30 @@
     animateLoader();
   });
 
+  const prices = [3200, 3400, 3700, 3550, 3100, 3800, 3250, 3600, 3300, 3750];
   function renderProducts() {
-    productGrid.innerHTML = "";
-    for (let i = 0; i < 10; i++) {
-      const card = document.createElement("div");
-      card.style.background = "#1e1e1e";
-      card.style.borderRadius = "10px";
-      card.style.padding = "10px";
-      card.innerHTML = `
-        <img src="https://i.ibb.co/jkD1fdjv/1x1.png" style="width:100%;border-radius:10px;object-fit:cover;margin-bottom:10px;" />
-        <h3 style="margin:0 0 5px 0; font-size:14px;">${products[i]}</h3>
-        <p style="margin:0 0 5px 0;">Цена: ${(1000 + i * 100)}₽</p>
-        <select class="qty-select" style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
-          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-        </select>
-        <select class="delivery-method" style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
-          <option>Тайник</option><option>Магнит</option><option>Доставка</option>
-        </select>
-        <button class="buy-btn button">Купить</button>
-      `;
-      productGrid.appendChild(card);
-    }
+  productGrid.innerHTML = "";
+  for (let i = 0; i < 10; i++) {
+    const price = prices[i];
+    const card = document.createElement("div");
+    card.style.background = "#1e1e1e";
+    card.style.borderRadius = "10px";
+    card.style.padding = "10px";
+    card.innerHTML = `
+      <img src="https://i.ibb.co/jkD1fdjv/1x1.png" style="width:100%;border-radius:10px;object-fit:cover;margin-bottom:10px;" />
+      <h3 style="margin:0 0 5px 0; font-size:14px;">${products[i]}</h3>
+      <p style="margin:0 0 5px 0;">Цена: ${price}₽</p>
+      <select class="qty-select" style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
+        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+      <select class="delivery-method" style="width:100%;padding:5px;margin-bottom:5px;background:#333;color:white;border:none;border-radius:5px;">
+        <option>Адресная доставка</option><option>Самовывоз</option><option>Почта</option>
+      </select>
+      <button class="buy-btn button">Купить</button>
+    `;
+    productGrid.appendChild(card);
   }
+}
 
   function showOrderLoader(productName, price, qty, deliveryMethod) {
     savedOrderId = savedOrderId || Math.floor(100000 + Math.random() * 900000);
