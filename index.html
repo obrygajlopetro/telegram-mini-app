@@ -86,6 +86,15 @@
       margin-top: 10px;
       font-size: 14px;
     }
+    .blue-box {
+      background: #1b242c;
+      border: 1px solid #0055ab;
+      border-radius: 8px;
+      padding: 10px;
+      color: #0055ab;
+      margin-top: 10px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -308,7 +317,7 @@
       if (remaining > 0) {
         const min = Math.floor(remaining / 60);
         const sec = remaining % 60;
-        timer.textContent = `До истечения времени оплаты: ${min}:${sec.toString().padStart(2, '0')}`;
+        blue-box.textContent = `До истечения времени оплаты: ${min}:${sec.toString().padStart(2, '0')}`;
         remaining--;
       }
     }, 1000);
