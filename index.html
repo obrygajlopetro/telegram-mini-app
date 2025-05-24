@@ -34,7 +34,7 @@
       color: white;
       cursor: pointer;
     }
-    .loader, .order-loader, .payment-screen {
+    .loader, .order-loader, {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -46,6 +46,19 @@
       width: 90%;
       max-width: 400px;
       text-align: center;
+    }
+    .payment-screen {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
     }
     .progress-container {
       width: 100%;
@@ -272,12 +285,12 @@
     const timeNow = new Date().toLocaleTimeString();
     const dateNow = new Date().toLocaleDateString();
     paymentScreen.innerHTML = `
-      <img src="https://i.ibb.co/qLzdxJpc/B512.png" alt="Баннер" style="max-width:100%;height:auto;object-fit:contain;margin-bottom:10px;">
-      <p>Время и дата: ${timeNow}, ${dateNow}</p>
-      <p>ID заказа: ${savedOrderId}</p>
-      <p>Позиция: ${name}</p>
-      <p>Метро:${selectedMetro}</p>
-      <p>Метод доставки: ${deliveryMethod}</p> <br>
+      <img src="https://i.ibb.co/0y7cCXgQ/Pay-Banner.png" alt="Баннер" style="max-width:100%;height:auto;object-fit:contain;margin-bottom:10px;">
+      <p>⌞Время и дата: ${timeNow}, ${dateNow}</p>
+      <p>⌞ID заказа: ${savedOrderId}</p>
+      <p>⌞Позиция: ${name}</p>
+      <p>⌞Метро:${selectedMetro}</p>
+      <p>⌞Метод доставки: ${deliveryMethod}</p> <br>
       <p><strong>Сумма: ${sum}₽</p>
       <p><strong>Реквизиты для оплаты:</strong> ${card}</p>
       <p id="timer"></p>
